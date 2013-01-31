@@ -214,6 +214,10 @@ void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn) {
 					case 0x15: rD = cpu.bitset(rA, rBv, cu); break;
 					case 0x16: cpu.bittst(rA, rBv, cu); break;
 					case 0x2B: if(cpu.conditional(rBv)) rD = rA; break;
+					case 0x2C: rD = sign_extend(rA,  8); if(cu) cpu.basic_flags(rD); break;
+					case 0x2D: rD = sign_extend(rA, 16); if(cu) cpu.basic_flags(rD); break;
+					case 0x2E: rD = rA & 0x000000FF; if(cu) cpu.basic_flags(rD); break;
+					case 0x2F: rD = rA & 0x0000FFFF; if(cu) cpu.basic_flags(rD); break;
 					case 0x38: rD = cpu.shift_left(rA, rBv, cu); break;
 					case 0x3A: rD = cpu.shift_right(rA, rBv, cu); break;
 					default:
@@ -367,8 +371,8 @@ int main() {
 	NOR = new uint8_t[0x00100000];
 	std::fill(NOR, NOR + 0x00100000, 0);
 
-	loadFileInto("hsfirmware.bin", NOR);
-//	loadFileInto("mini_colors.bin", RAM + 0x000901FC);
+	loadFileInto("roms/hsfirmware.bin", NOR);
+//	loadFileInto("roms/mini_colors.bin", RAM + 0x000901FC);
 
 	cpu.pc = 0x9F000000;
 //	cpu.pc = 0xA0091000;
