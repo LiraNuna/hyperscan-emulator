@@ -1,0 +1,59 @@
+000
+	0000 - nop
+	0001 - mlfh
+	0010 - mhfl
+	0011 - mv
+	0100 - br{cond}
+	0101 - t{cond}
+	
+	1000 - sll
+	1001 - addc
+	1010 - srl
+	1011 - sra
+
+010
+	0000 - add
+	0001 - sub
+	0010 - neg
+	0011 - cmp
+	0100 - and
+	0101 - or
+	0110 - not 
+	0111 - xor
+	
+	1000 - lw
+	1001 - lh
+	1010 - pop
+	1011 - lbu
+	1100 - sw
+	1101 - sh
+	1110 - push
+	1111 - sb
+
+011
+	0 - j
+	1 - jl
+
+100
+	b{cond}
+	
+101
+	ldiu
+
+110
+	000 - addei // immediate is positive
+	000 - subei // immediate is negative
+	001 - slli
+	010 - sdbbp
+	011 - srli
+	100 - bitclr
+	101 - bitset // Missing from docs
+	110 - bittst // Error in docs
+
+111
+	000 - lwp
+	001 - lbup
+	011 - lhp
+	100 - swp
+	101 - shp
+	111 - sbp
