@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <algorithm>
 
-#include "memory/miu.h"
+#include "memory/segmentedmemoryregion.h"
 
 #ifndef __HYPERSCAN_CPU_H__
 #define __HYPERSCAN_CPU_H__
@@ -210,7 +210,7 @@ class CPU {
 		uint32_t pc;
 
 		// Memory interfacing unit
-		memory::MIU miu;
+		memory::SegmentedMemoryRegion<8, 24 > miu;
 };
 
 }

@@ -1,5 +1,7 @@
 #include <array>
 
+#include "memoryregion.h"
+
 #ifndef __HYPERSCAN_MEMORY_ARRAYMEMORYREGION_H__
 #define __HYPERSCAN_MEMORY_ARRAYMEMORYREGION_H__
 
@@ -10,15 +12,18 @@ namespace memory {
 /**
  * Memory region from an array
  */
-class ArrayMemoryRegion: public MIU::MemoryRegion {
+template <unsigned addressable_bits >
+class ArrayMemoryRegion: public MemoryRegion<addressable_bits > {
 	public:
-		ArrayMemoryRegion():
-			MemoryRegion(0x00FFFFFF) {
+		static constexpr unsigned TOTAL_SIZE  = (1 << addressable_bits);
+		static constexpr unsigned ACCESS_MASK = TOTAL_SIZE - 1;
+
+		ArrayMemoryRegion() {
 
 		}
 
-		ArrayMemoryRegion(const std::array<uint8_t, 0x01000000 > &data):
-			MemoryRegion(0x00FFFFFF), memory(data) {
+		ArrayMemoryRegion(const std::array<uint8_t, TOTAL_SIZE > &data):
+			memory(data) {
 
 		}
 
@@ -58,7 +63,7 @@ class ArrayMemoryRegion: public MIU::MemoryRegion {
 			memory[address + 3] = (value >> 24) & 0xFF;
 		}
 
-		std::array<uint8_t, 0x01000000 > memory;
+		std::array<uint8_t, TOTAL_SIZE > memory;
 };
 
 }

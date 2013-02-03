@@ -267,8 +267,8 @@ void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn) {
 /**
  * TODO: make better
  */
-memory::ArrayMemoryRegion* createFileMemoryRegion(const char* fileName) {
-	memory::ArrayMemoryRegion* result = new memory::ArrayMemoryRegion();
+memory::ArrayMemoryRegion<24 >* createFileMemoryRegion(const char* fileName) {
+	memory::ArrayMemoryRegion<24 >* result = new memory::ArrayMemoryRegion<24 >();
 
 	FILE* f = fopen(fileName, "rb");
 	if(!f) {
@@ -297,9 +297,9 @@ if(addr == 0x8807006C)
 int main() {
 	hyperscan::CPU cpu;
 
-	memory::ArrayMemoryRegion* firmware = createFileMemoryRegion("roms/hsfirmware.bin");
-	memory::ArrayMemoryRegion* ram = new memory::ArrayMemoryRegion();
-	memory::ArrayMemoryRegion* mmio = new memory::ArrayMemoryRegion();
+	memory::ArrayMemoryRegion<24 >* firmware = createFileMemoryRegion("roms/hsfirmware.bin");
+	memory::ArrayMemoryRegion<24 >* ram = new memory::ArrayMemoryRegion<24 >();
+	memory::ArrayMemoryRegion<24 >* mmio = new memory::ArrayMemoryRegion<24 >();
 
 	cpu.miu.setRegion(0x9E, firmware);
 	cpu.miu.setRegion(0x9F, firmware);
