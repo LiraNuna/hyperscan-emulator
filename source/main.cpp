@@ -2,9 +2,9 @@
 #include <iostream>
 
 #include "hyperscan/cpu.h"
+#include "hyperscan/memory/arraymemoryregion.h"
 
-uint8_t* RAM;
-uint8_t* NOR;
+using namespace hyperscan;
 
 void dumpRegisters(const hyperscan::CPU &cpu) {
 	printf("PC = 0x%08X                N[%c] Z[%c] C[%c] V[%c] T[%c]\n",
@@ -24,69 +24,6 @@ void dumpRegisters(const hyperscan::CPU &cpu) {
 			((i + 3) < 10) ? " " : "", i + 3, cpu.r[i + 3]
 		);
 	}
-}
-
-void dumpMemory() {
-	FILE* out = fopen("MEMDUMP", "wb");
-	fwrite(RAM, 0x1000000, 1, out);
-	fclose(out);
-}
-
-// mmio
-// TODO: move out
-
-uint8_t cpuReadByte(uint32_t addr) {
-	switch(addr >> 24) {
-		// NOR:
-		case 0x9E:
-		case 0x9F:
-				return NOR[addr & 0x000FFFFF];
-			break;
-		// RAM
-		case 0x80:
-		case 0xA0:
-				return RAM[addr & 0x00FFFFFF];
-			break;
-		// Registers
-		case 0x88:
-			// XXX P_MIU1_SDRAM_SETTING: SDRAM self refresh
-			if(addr == 0x8807006C)
-				return 0;
-
-			return -1;
-	}
-
-	return -1;
-}
-
-uint16_t cpuReadHword(uint32_t addr) {
-	return cpuReadByte(addr + 0) << 0 |
-		   cpuReadByte(addr + 1) << 8;
-}
-
-uint32_t cpuReadWord(uint32_t addr) {
-	return cpuReadHword(addr + 0) <<  0 |
-		   cpuReadHword(addr + 2) << 16;
-}
-
-void cpuWriteByte(uint32_t addr, uint8_t value) {
-	switch(addr >> 24) {
-		// RAM
-		case 0x80:
-		case 0xA0:
-				RAM[addr & 0x00FFFFFF] = value;
-			break;
-	}
-}
-
-void cpuWriteHword(uint32_t addr, uint16_t value) {
-	cpuWriteByte(addr + 0, (value >> 0) & 0xFF);
-	cpuWriteByte(addr + 1, (value >> 8) & 0xFF);
-}
-
-void cpuWriteWord(uint32_t addr, uint32_t value) {
-	cpuWriteHword(addr + 0, (value >>  0) & 0xFFFF);
-	cpuWriteHword(addr + 2, (value >> 16) & 0xFFFF);
 }
 
 // --- utils
@@ -122,7 +59,7 @@ void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn) {
 					case 0x05: if(rA == 0) cpu.T = cpu.conditional(rD); break;
 					default:
 						fprintf(stderr, "unimplemented 16bit op0, %d\n", bit_range(insn, 0, 4));
-						dumpRegisters(cpu); dumpMemory();
+						dumpRegisters(cpu);
 						exit(1);
 				}
 			} break;
@@ -131,15 +68,15 @@ void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn) {
 				uint32_t &rD = cpu.g0[bit_range(insn, 8, 4)];
 				switch(bit_range(insn, 0, 4)) {
 					case 0x03: cpu.cmp(rD, rA, true); break;
-					case 0x08: rD = cpuReadWord(rA); break;
-					case 0x0C: cpuWriteWord(rA, rD); break;
+					case 0x08: rD = cpu.miu.readU8(rA); break;
+					case 0x0C: cpu.miu.writeU32(rA, rD); break;
 					// XXX: H-bit is not correclty behaving
-					case 0x0A: rD = cpuReadWord(rA); rA += 4; break;
-					case 0x0E: cpuWriteWord(rA -= 4, rD); break;
-					case 0x0F: cpuWriteByte(rA, rD); break;
+					case 0x0A: rD = cpu.miu.readU8(rA); rA += 4; break;
+					case 0x0E: cpu.miu.writeU32(rA -= 4, rD); break;
+					case 0x0F: cpu.miu.writeU8(rA, rD); break;
 					default:
 						fprintf(stderr, "unimplemented 16bit op2, %d\n", bit_range(insn, 0, 4));
-						dumpRegisters(cpu); dumpMemory();
+						dumpRegisters(cpu);
 						exit(1);
 				}
 			} break;
@@ -166,7 +103,7 @@ void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn) {
 					case 0x06: cpu.bittst(rD, imm5, true); break;
 					default:
 						fprintf(stderr, "unimplemented 16bit op6, func%d\n", bit_range(insn, 0, 3));
-						dumpRegisters(cpu); dumpMemory();
+						dumpRegisters(cpu);
 						exit(1);
 				}
 			} break;
@@ -174,17 +111,17 @@ void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn) {
 				uint32_t &rD = cpu.g0[bit_range(insn, 8, 4)];
 				uint8_t imm5 = bit_range(insn, 3, 5);
 				switch(bit_range(insn, 0, 3)) {
-					case 0x00: rD = cpuReadWord(cpu.r2 + (imm5 << 2)); break;
-					case 0x04: cpuWriteWord(cpu.r2 + (imm5 << 2), rD); break;
+					case 0x00: rD = cpu.miu.readU8(cpu.r2 + (imm5 << 2)); break;
+					case 0x04: cpu.miu.writeU32(cpu.r2 + (imm5 << 2), rD); break;
 					default:
 						fprintf(stderr, "unimplemented 16bit op7, func%d\n", bit_range(insn, 0, 3));
-						dumpRegisters(cpu); dumpMemory();
+						dumpRegisters(cpu);
 						exit(1);
 				}
 			} break;
 		default:
 			fprintf(stderr, "unimplemented (16bit): op=%04X (%d)\n", insn, insn >> 12);
-			dumpRegisters(cpu); dumpMemory();
+			dumpRegisters(cpu);
 			exit(1);
 	}
 
@@ -222,7 +159,7 @@ void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn) {
 					case 0x3A: rD = cpu.shift_right(rA, rBv, cu); break;
 					default:
 						fprintf(stderr, "unimplemented (0x00): op=%02X\n", bit_range(insn, 1, 6));
-						dumpRegisters(cpu); dumpMemory();
+						dumpRegisters(cpu);
 						exit(1);
 				}
 			} break;
@@ -260,14 +197,14 @@ void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn) {
 					rA += imm12;
 
 				switch(insn & 0x07) {
-					case 0x00: rD = cpuReadWord(rA); break;
-					case 0x01: rD = sign_extend(cpuReadHword(rA), 16); break;
-					case 0x02: rD = cpuReadHword(rA); break;
-					case 0x03: rD = sign_extend(cpuReadByte(rA), 8); break;
-					case 0x04: cpuWriteWord(rA, rD); break;
-					case 0x05: cpuWriteHword(rA, rD); break;
-					case 0x06: rD = cpuReadByte(rA); break;
-					case 0x07: cpuWriteByte(rA, rD); break;
+					case 0x00: rD = cpu.miu.readU8(rA); break;
+					case 0x01: rD = sign_extend(cpu.miu.readU16(rA), 16); break;
+					case 0x02: rD = cpu.miu.readU16(rA); break;
+					case 0x03: rD = sign_extend(cpu.miu.readU8(rA), 8); break;
+					case 0x04: cpu.miu.writeU32(rA, rD); break;
+					case 0x05: cpu.miu.writeU16(rA, rD); break;
+					case 0x06: rD = cpu.miu.readU8(rA); break;
+					case 0x07: cpu.miu.writeU8(rA, rD); break;
 				}
 
 				// Post-increment
@@ -300,54 +237,39 @@ void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn) {
 				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
 				uint32_t imm15 = bit_range(insn, 0, 15);
 
-				rD = cpuReadWord(rA + sign_extend(imm15, 15));
+				rD = cpu.miu.readU8(rA + sign_extend(imm15, 15));
 			} break;
 		case 0x12: {
 				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
 				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
 				uint32_t imm15 = bit_range(insn, 0, 15);
 
-				rD = cpuReadHword(rA + sign_extend(imm15, 15));
+				rD = cpu.miu.readU16(rA + sign_extend(imm15, 15));
 			} break;
 		case 0x14: {
 				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
 				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
 				uint32_t imm15 = bit_range(insn, 0, 15);
 
-				cpuWriteWord(rA + sign_extend(imm15, 15), rD);
+				cpu.miu.writeU32(rA + sign_extend(imm15, 15), rD);
 			} break;
 		case 0x18:
 				// cache
 			break;
 		default:
-				fprintf(stderr, "unimplemented: op=%02X (0x%08X)\n", op, cpuReadWord(cpu.pc));
-				dumpRegisters(cpu); dumpMemory();
+				fprintf(stderr, "unimplemented: op=%02X (0x%08X)\n", op, cpu.miu.readU8(cpu.pc));
+				dumpRegisters(cpu);
 				exit(1);
 			break;
 	}
 }
 
-// decodes and executes instruction, returns instruction size
-size_t spg290_insn(hyperscan::CPU &cpu) {
-	int instructionSize = 2;
-	uint32_t instruction = cpuReadHword(cpu.pc);
+/**
+ * TODO: make better
+ */
+memory::ArrayMemoryRegion* createFileMemoryRegion(const char* fileName) {
+	memory::ArrayMemoryRegion* result = new memory::ArrayMemoryRegion();
 
-	if(instruction & 0x8000) {
-		instruction &= 0x7FFF;
-		instruction |= cpuReadHword(cpu.pc + instructionSize) << 15;
-		instruction &= 0x3FFFFFFF;
-
-		instructionSize += 2;
-
-		spg290_insn32(cpu, instruction);
-	} else {
-		spg290_insn16(cpu, instruction);
-	}
-
-	return instructionSize;
-}
-
-void loadFileInto(const char* fileName, uint8_t* result) {
 	FILE* f = fopen(fileName, "rb");
 	if(!f) {
 		fprintf(stderr, "bad file: %s", fileName);
@@ -358,28 +280,44 @@ void loadFileInto(const char* fileName, uint8_t* result) {
 	size_t fileSize = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
-	fread(result, fileSize, 1, f);
+	if(fread(result->memory.begin(), 1, fileSize, f) != fileSize)
+		fprintf(stderr, "WARNING: Bad firmware\n");
+
 	fclose(f);
+
+	return result;
 }
+
+/*
+// XXX P_MIU1_SDRAM_SETTING: SDRAM self refresh
+if(addr == 0x8807006C)
+	return 0;
+*/
 
 int main() {
 	hyperscan::CPU cpu;
 
-	RAM = new uint8_t[0x01000000];
-	std::fill(RAM, RAM + 0x01000000, 0);
+	memory::ArrayMemoryRegion* firmware = createFileMemoryRegion("roms/hsfirmware.bin");
+	memory::ArrayMemoryRegion* ram = new memory::ArrayMemoryRegion();
+	memory::ArrayMemoryRegion* mmio = new memory::ArrayMemoryRegion();
 
-	NOR = new uint8_t[0x00100000];
-	std::fill(NOR, NOR + 0x00100000, 0);
+	cpu.miu.setRegion(0x9E, firmware);
+	cpu.miu.setRegion(0x9F, firmware);
 
-	loadFileInto("roms/hsfirmware.bin", NOR);
-//	loadFileInto("roms/mini_colors.bin", RAM + 0x000901FC);
+	cpu.miu.setRegion(0x80, ram);
+	cpu.miu.setRegion(0xA0, ram);
 
+	cpu.miu.setRegion(0x08, mmio);
+	cpu.miu.setRegion(0x88, mmio);
+
+	// Firmware entry point
 	cpu.pc = 0x9F000000;
-//	cpu.pc = 0xA0091000;
-	while(1)
-		cpu.pc += spg290_insn(cpu);
 
-	free(RAM);
+//	// ISO "entry point"
+//	cpu.pc = 0xA0091000;
+
+	while(1)
+		cpu.step();
 
 	return 0;
 }

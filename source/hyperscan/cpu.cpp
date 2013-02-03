@@ -1,5 +1,9 @@
 #include "cpu.h"
 
+// XXX: merge into hyperscan::CPU
+extern void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn);
+extern void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn);
+
 namespace hyperscan {
 
 CPU::CPU() {
@@ -24,6 +28,27 @@ void CPU::reset_registers() {
 	std::fill(cr, cr + 32, 0);
 
 	pc = 0;
+}
+
+void CPU::step() {
+	int instructionSize = 2;
+	uint32_t instruction = miu.readU16(pc);
+
+	// Pre-decode the instruction
+	if(instruction & 0x8000) {
+		// Remove p0 and p1 bits before handling the instruction as 30bit
+		instruction &= 0x00007FFF;
+		instruction |= miu.readU16(pc + 2) << 15;
+		instruction &= 0x3FFFFFFF;
+
+		instructionSize += 2;
+
+		spg290_insn32(*this, instruction);
+	} else {
+		spg290_insn16(*this, instruction);
+	}
+
+	pc += instructionSize;
 }
 
 bool CPU::conditional(uint8_t pattern) const {
@@ -52,6 +77,25 @@ bool CPU::conditional(uint8_t pattern) const {
 void CPU::basic_flags(uint32_t res) {
 	N = (res >> 31);
 	Z = (res == 0);
+}
+
+void CPU::cmp(uint32_t a, uint32_t b, int tcs, bool flags) {
+	if(!flags)
+		return;
+
+	sub(a, b, true);
+	switch(tcs) {
+		case 0x00: T = Z; break;
+		case 0x01: T = N; break;
+	}
+}
+
+void CPU::bittst(uint32_t a, uint8_t bit, bool flags) {
+	if(!flags)
+		return;
+
+	N = (a >> 31);
+	Z = (a >> bit) & 1;
 }
 
 uint32_t CPU::add(uint32_t a, uint32_t b, bool flags) {
@@ -118,7 +162,6 @@ uint32_t CPU::shift_right(uint32_t a, uint8_t sa, bool flags) {
 
 uint32_t CPU::bitset(uint32_t a, uint8_t bit, bool flags) {
 	uint32_t res = a | (1 << bit);
-
 	if(flags) {
 		// XXX: Those aren't in docs, may be wrong
 		N = (res >> 31);
@@ -130,7 +173,6 @@ uint32_t CPU::bitset(uint32_t a, uint8_t bit, bool flags) {
 
 uint32_t CPU::bitclr(uint32_t a, uint8_t bit, bool flags) {
 	uint32_t res = a & ~(1 << bit);
-
 	if(flags) {
 		// XXX: Those aren't in docs, may be wrong
 		N = (res >> 31);
@@ -138,25 +180,6 @@ uint32_t CPU::bitclr(uint32_t a, uint8_t bit, bool flags) {
 	}
 
 	return res;
-}
-
-void CPU::cmp(uint32_t a, uint32_t b, int tcs, bool flags) {
-	if(!flags)
-		return;
-
-	sub(a, b, true);
-	switch(tcs) {
-		case 0x00: T = Z; break;
-		case 0x01: T = N; break;
-	}
-}
-
-void CPU::bittst(uint32_t a, uint8_t bit, bool flags) {
-	if(!flags)
-		return;
-
-	N = (a >> 31);
-	Z = (a >> bit) & 1;
 }
 
 }

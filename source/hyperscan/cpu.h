@@ -1,22 +1,142 @@
 #include <stdint.h>
 #include <algorithm>
 
+#include "memory/miu.h"
+
 #ifndef __HYPERSCAN_CPU_H__
 #define __HYPERSCAN_CPU_H__
 
 namespace hyperscan {
 
 class CPU {
+	protected:
+		union Instruction32 {
+			struct {
+				uint32_t LK			:  1;
+				uint32_t Disp24		: 24;
+				uint32_t OP			:  5;
+			} jform;
+
+			struct bcform {
+				uint32_t LK			:  1;
+				uint32_t Disp8_0	:  9;
+				uint32_t BC			:  5;
+				uint32_t Disp18_9	: 10;
+				uint32_t OP			:  5;
+			};
+
+			struct {
+				uint32_t CU			:  1;
+				uint32_t func6		:  6;
+				uint32_t 			:  3;
+				uint32_t rB			:  5;
+				uint32_t rA			:  5;
+				uint32_t rD			:  5;
+				uint32_t OP			:  5;
+			} spform;
+
+			struct {
+				uint32_t CU			:  1;
+				uint32_t Imm16		: 16;
+				uint32_t func3		:  3;
+				uint32_t rD			:  5;
+				uint32_t OP			:  5;
+			} iform;
+
+			struct {
+				uint32_t CU			:  1;
+				uint32_t Imm14		: 14;
+				uint32_t rA			:  5;
+				uint32_t rD			:  5;
+				uint32_t OP			:  5;
+			} riform;
+
+			struct {
+				uint32_t CU			:  1;
+				uint32_t Imm12		: 14;
+				uint32_t rA			:  5;
+				uint32_t rD			:  5;
+				uint32_t OP			:  5;
+			} rixform;
+
+			// TODO: CENew
+			// TODO: CR-form
+
+			// TODO: mtc/mfc
+			// TODO: ldc/stc
+			// TODO: cop
+
+			uint32_t encoded;
+		};
+
+		union Instruction16 {
+			struct {
+				uint16_t Imm8		:  8;
+				uint16_t EC			:  4;
+				uint16_t OP			:  3;
+			} bxform;
+
+			struct {
+				uint16_t LK			:  1;
+				uint16_t Disp11		: 11;
+				uint16_t OP			:  3;
+			} jform;
+
+			struct {
+				uint16_t func4		:  4;
+				uint16_t rA			:  4;
+				uint16_t rD			:  4;
+				uint16_t OP			:  3;
+			} rform;
+
+			struct {
+				uint16_t func3		:  3;
+				uint16_t Imm5		:  5;
+				uint16_t rD			:  4;
+				uint16_t OP			:  3;
+			} iform1;
+
+			struct {
+				uint16_t Imm8		:  8;
+				uint16_t rD			:  4;
+				uint16_t OP			:  3;
+			} iform2;
+
+			uint16_t encoded;
+		};
+
 	public:
 		CPU();
 
+		/**
+		 * Reset the CPU
+		 */
 		void reset();
 
+		/**
+		 * Reset all CPU flags
+		 */
 		void reset_flags();
 
+		/**
+		 * Reset all CPU registers
+		 */
 		void reset_registers();
 
+		/**
+		 * Runs a single instruction from PC
+		 * Advances PC and updates flags according to instruction
+		 */
+		void step();
+
+//	protected:
+		bool conditional(uint8_t pattern) const;
+
 		void basic_flags(uint32_t res);
+
+		void cmp(uint32_t a, uint32_t b, int tcs=3, bool flags=true);
+
+		void bittst(uint32_t a, uint8_t bit, bool flags=true);
 
 		uint32_t add(uint32_t a, uint32_t b, bool flags);
 
@@ -35,12 +155,6 @@ class CPU {
 		uint32_t bitset(uint32_t a, uint8_t bit, bool flags);
 
 		uint32_t bitclr(uint32_t a, uint8_t bit, bool flags);
-
-		void cmp(uint32_t a, uint32_t b, int tcs=3, bool flags=true);
-
-		void bittst(uint32_t a, uint8_t bit, bool flags=true);
-
-		bool conditional(uint8_t pattern) const;
 
 	public:
 		// Registers
@@ -94,6 +208,9 @@ class CPU {
 
 		// Program Counter
 		uint32_t pc;
+
+		// Memory interfacing unit
+		memory::MIU miu;
 };
 
 }
