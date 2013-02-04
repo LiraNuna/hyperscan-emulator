@@ -114,9 +114,9 @@ void CPU::exec32(const Instruction32 &insn) {
 					// extsh[.c] rD, rA
 					case 0x2D: rD = sign_extend(rA, 16); if(insn.spform.CU) basic_flags(rD); break;
 					// extzb[.c] rD, rA
-					case 0x2E: rD = rA & 0x000000FF; if(insn.spform.CU) basic_flags(rD); break;
+					case 0x2E: rD = bit_and(rA, 0x000000FF, insn.spform.CU); break;
 					// extzh[.c] rD, rA
-					case 0x2F: rD = rA & 0x0000FFFF; if(insn.spform.CU) basic_flags(rD); break;
+					case 0x2F: rD = bit_and(rA, 0x0000FFFF, insn.spform.CU); break;
 
 					// slli[.c] rD, rA, imm5
 					case 0x38: rD = shift_left(rA, insn.spform.rB, insn.spform.CU); break;
