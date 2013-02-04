@@ -98,9 +98,9 @@ void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn) {
 				uint32_t &rD = cpu.g0[bit_range(insn, 8, 4)];
 				uint8_t imm5 = bit_range(insn, 3, 5);
 				switch(bit_range(insn, 0, 3)) {
-					case 0x04: rD = cpu.bitclr(rD, imm5, true); break;
-					case 0x05: rD = cpu.bitset(rD, imm5, true); break;
-					case 0x06: cpu.bittst(rD, imm5, true); break;
+					case 0x04: rD = cpu.bit_and(rD, 1 << imm5, true); break;
+					case 0x05: rD = cpu.bit_or(rD, 1 << imm5, true); break;
+					case 0x06: cpu.bit_and(rD, 1 << imm5, true); break;
 					default:
 						fprintf(stderr, "unimplemented 16bit op6, func%d\n", bit_range(insn, 0, 3));
 						dumpRegisters(cpu);
@@ -125,143 +125,6 @@ void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn) {
 			exit(1);
 	}
 
-}
-
-void spg290_insn32(hyperscan::CPU &cpu, uint32_t insn) {
-	uint8_t op = insn >> 25;
-	switch(op) {
-		case 0x00: {
-				bool cu = insn & 1;
-				uint32_t rDv = bit_range(insn, 20, 5);
-				uint32_t rAv = bit_range(insn, 15, 5);
-				uint32_t rBv = bit_range(insn, 10, 5);
-
-				uint32_t &rD = cpu.r[rDv];
-				uint32_t &rA = cpu.r[rAv];
-				uint32_t &rB = cpu.r[rBv];
-				switch(bit_range(insn, 1, 6)) {
-					case 0x00: /* nop */ break;
-					case 0x04: if(cpu.conditional(rBv)) cpu.pc = rA - 4; break;
-					case 0x08: rD = cpu.add(rA, rB, cu); break;
-					case 0x09: rD = cpu.addc(rA, rB, cu); break;
-					case 0x0A: rD = cpu.sub(rA, rB, cu); break;
-					case 0x0C: cpu.cmp(rA, rB, bit_range(insn, 20, 2), cu); break;
-					case 0x10: rD = cpu.bit_and(rA, rB, cu); break;
-					case 0x11: rD = cpu.bit_or(rA, rB, cu); break;
-					case 0x15: rD = cpu.bitset(rA, rBv, cu); break;
-					case 0x16: cpu.bittst(rA, rBv, cu); break;
-					case 0x2B: if(cpu.conditional(rBv)) rD = rA; break;
-					case 0x2C: rD = sign_extend(rA,  8); if(cu) cpu.basic_flags(rD); break;
-					case 0x2D: rD = sign_extend(rA, 16); if(cu) cpu.basic_flags(rD); break;
-					case 0x2E: rD = rA & 0x000000FF; if(cu) cpu.basic_flags(rD); break;
-					case 0x2F: rD = rA & 0x0000FFFF; if(cu) cpu.basic_flags(rD); break;
-					case 0x38: rD = cpu.shift_left(rA, rBv, cu); break;
-					case 0x3A: rD = cpu.shift_right(rA, rBv, cu); break;
-					default:
-						fprintf(stderr, "unimplemented (0x00): op=%02X\n", bit_range(insn, 1, 6));
-						dumpRegisters(cpu);
-						exit(1);
-				}
-			} break;
-		case 0x01:
-		case 0x05: {
-				bool cu = insn & 1;
-				bool shifted = op & 0x04;
-				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
-				uint32_t imm16 = bit_range(insn, 1, 16) << (shifted * 16);
-				switch(bit_range(insn, 17, 3)) {
-					case 0x00: rD = cpu.add(rD, sign_extend(imm16, 16 * (shifted + 1)), cu); break;
-					case 0x02: cpu.cmp(rD, imm16, 3, cu); break;
-					case 0x04: rD = cpu.bit_and(rD, imm16, cu); break;
-					case 0x05: rD = cpu.bit_or(rD, imm16, cu); break;
-					case 0x06: rD = sign_extend(imm16, 16 * (shifted + 1)); break;
-				}
-			} break;
-		case 0x02: {
-				// Link
-				if(insn & 1)
-					cpu.r3 = cpu.pc + 4;
-
-				// Update PC
-				cpu.pc &= 0xFC000000;
-				cpu.pc |= (bit_range(insn, 1, 24) << 1) - 4;
-			} break;
-		case 0x03:
-		case 0x07: {
-				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
-				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
-				uint32_t imm12 = sign_extend(bit_range(insn, 3, 12), 12);
-
-				// Pre-increment
-				if(op == 0x03)
-					rA += imm12;
-
-				switch(insn & 0x07) {
-					case 0x00: rD = cpu.miu.readU8(rA); break;
-					case 0x01: rD = sign_extend(cpu.miu.readU16(rA), 16); break;
-					case 0x02: rD = cpu.miu.readU16(rA); break;
-					case 0x03: rD = sign_extend(cpu.miu.readU8(rA), 8); break;
-					case 0x04: cpu.miu.writeU32(rA, rD); break;
-					case 0x05: cpu.miu.writeU16(rA, rD); break;
-					case 0x06: rD = cpu.miu.readU8(rA); break;
-					case 0x07: cpu.miu.writeU8(rA, rD); break;
-				}
-
-				// Post-increment
-				if(op == 0x07)
-					rA += imm12;
-			} break;
-		case 0x04: {
-				// TODO: I don't know why this works and not what the docs say
-				// Taken from score7 binutils
-				if(cpu.conditional(bit_range(insn, 10, 4))) {
-					// XXX: docs say this should happen if test fails as well
-					if(insn & 1)
-						cpu.r3 = cpu.pc + 4;
-
-                    cpu.pc += sign_extend(((insn & 0x01FF8000) >> 5) | (insn & 0x3FE), 20) - 4;
-				}
-			} break;
-		case 0x06:
-				// Bullshit.
-			break;
-		case 0x0C: {
-				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
-				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
-				uint32_t imm14 = bit_range(insn, 1, 14);
-
-				rD = cpu.bit_and(rA, imm14, insn & 1);
-			} break;
-		case 0x10: {
-				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
-				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
-				uint32_t imm15 = bit_range(insn, 0, 15);
-
-				rD = cpu.miu.readU8(rA + sign_extend(imm15, 15));
-			} break;
-		case 0x12: {
-				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
-				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
-				uint32_t imm15 = bit_range(insn, 0, 15);
-
-				rD = cpu.miu.readU16(rA + sign_extend(imm15, 15));
-			} break;
-		case 0x14: {
-				uint32_t &rD = cpu.r[bit_range(insn, 20, 5)];
-				uint32_t &rA = cpu.r[bit_range(insn, 15, 5)];
-				uint32_t imm15 = bit_range(insn, 0, 15);
-
-				cpu.miu.writeU32(rA + sign_extend(imm15, 15), rD);
-			} break;
-		case 0x18:
-				// cache
-			break;
-		default:
-				fprintf(stderr, "unimplemented: op=%02X (0x%08X)\n", op, cpu.miu.readU8(cpu.pc));
-				dumpRegisters(cpu);
-				exit(1);
-			break;
-	}
 }
 
 /**

@@ -11,21 +11,29 @@ namespace hyperscan {
 class CPU {
 	protected:
 		union Instruction32 {
-			struct {
+			Instruction32(uint32_t encoded):
+				encoded(encoded) {
+
+			}
+
+			// OP = 0x02
+			struct jform {
 				uint32_t LK			:  1;
 				uint32_t Disp24		: 24;
 				uint32_t OP			:  5;
 			} jform;
 
+			// OP = 0x04
 			struct bcform {
 				uint32_t LK			:  1;
 				uint32_t Disp8_0	:  9;
 				uint32_t BC			:  5;
 				uint32_t Disp18_9	: 10;
 				uint32_t OP			:  5;
-			};
+			} bcform;
 
-			struct {
+			// OP = 0x00
+			struct spform {
 				uint32_t CU			:  1;
 				uint32_t func6		:  6;
 				uint32_t 			:  3;
@@ -35,7 +43,8 @@ class CPU {
 				uint32_t OP			:  5;
 			} spform;
 
-			struct {
+			// OP = 0x01, 0x05
+			struct iform {
 				uint32_t CU			:  1;
 				uint32_t Imm16		: 16;
 				uint32_t func3		:  3;
@@ -43,7 +52,7 @@ class CPU {
 				uint32_t OP			:  5;
 			} iform;
 
-			struct {
+			struct riform {
 				uint32_t CU			:  1;
 				uint32_t Imm14		: 14;
 				uint32_t rA			:  5;
@@ -51,13 +60,21 @@ class CPU {
 				uint32_t OP			:  5;
 			} riform;
 
-			struct {
-				uint32_t CU			:  1;
+			struct rixform {
+				uint32_t func3		:  3;
 				uint32_t Imm12		: 14;
 				uint32_t rA			:  5;
 				uint32_t rD			:  5;
 				uint32_t OP			:  5;
 			} rixform;
+
+			// Not in docs - 'memory' form
+			struct mform {
+				uint32_t Imm15      : 15;
+				uint32_t rA         :  5;
+				uint32_t rD         :  5;
+				uint32_t OP         :  5;
+			} mform;
 
 			// TODO: CENew
 			// TODO: CR-form
@@ -66,10 +83,20 @@ class CPU {
 			// TODO: ldc/stc
 			// TODO: cop
 
+			struct {
+				uint32_t			: 25;
+				uint32_t OP			:  5;
+			};
+
 			uint32_t encoded;
 		};
 
 		union Instruction16 {
+			Instruction16(uint16_t encoded):
+				encoded(encoded) {
+
+			}
+
 			struct {
 				uint16_t Imm8		:  8;
 				uint16_t EC			:  4;
@@ -130,13 +157,15 @@ class CPU {
 		void step();
 
 //	protected:
+		void exec16(const Instruction16 &insn);
+
+		void exec32(const Instruction32 &insn);
+
 		bool conditional(uint8_t pattern) const;
 
 		void basic_flags(uint32_t res);
 
 		void cmp(uint32_t a, uint32_t b, int tcs=3, bool flags=true);
-
-		void bittst(uint32_t a, uint8_t bit, bool flags=true);
 
 		uint32_t add(uint32_t a, uint32_t b, bool flags);
 
@@ -148,13 +177,14 @@ class CPU {
 
 		uint32_t bit_or(uint32_t a, uint32_t b, bool flags);
 
+		uint32_t bit_xor(uint32_t a, uint32_t b, bool flags);
+
 		uint32_t shift_left(uint32_t a, uint8_t sa, bool flags);
 
 		uint32_t shift_right(uint32_t a, uint8_t sa, bool flags);
 
-		uint32_t bitset(uint32_t a, uint8_t bit, bool flags);
-
-		uint32_t bitclr(uint32_t a, uint8_t bit, bool flags);
+	private:
+		void debugDump();
 
 	public:
 		// Registers
