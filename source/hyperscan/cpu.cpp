@@ -81,13 +81,16 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x09: rD = addc(rA, rB, insn.spform.CU); break;
 					// sub[.c] rD, rA, rB
 					case 0x0A: rD = sub(rA, rB, insn.spform.CU); break;
+					// subc[.c] rD, rA, rB
+					case 0x0B: rD = subc(rA, rB, insn.spform.CU); break;
 					// cmp{tcs}.c rA, rB
-
 					case 0x0C:      cmp(rA, rB, insn.spform.rD & 0x03, insn.spform.CU); break;
 					// cmpz{tcs}.c rA, rB
 					case 0x0D:      cmp(rA, 0, insn.spform.rD & 0x03, insn.spform.CU); break;
-					// and[.c] rD, rA, rB
 
+					// not[.c] rD, rB
+					case 0x0F: rD = bit_xor(rB, ~0, insn.spform.CU); break;
+					// and[.c] rD, rA, rB
 					case 0x10: rD = bit_and(rA, rB, insn.spform.CU); break;
 					// or[.c] rD, rA, rB
 					case 0x11: rD = bit_or(rA, rB, insn.spform.CU); break;
@@ -95,7 +98,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x12: rD = bit_xor(rA, ~0, insn.spform.CU); break;
 					// xor[.c] rD, rA, rB
 					case 0x13: rD = bit_or(rA, rB, insn.spform.CU); break;
-
+					// bitclr[.c] rD, rA, imm5
+					case 0x14: rD = bit_and(rA, ~(1 << insn.spform.rB), insn.spform.CU);
 					// bitset[.c] rD, rA, imm5
 					case 0x15: rD = bit_or(rA, 1 << insn.spform.rB, insn.spform.CU);
 					// bittst.c rA, imm5
@@ -390,6 +394,10 @@ uint32_t CPU::sub(uint32_t a, uint32_t b, bool flags) {
 	}
 
 	return res;
+}
+
+uint32_t CPU::subc(uint32_t a, uint32_t b, bool flags) {
+	return sub(sub(a, b, false), ~C, flags);
 }
 
 uint32_t CPU::bit_and(uint32_t a, uint32_t b, bool flags) {

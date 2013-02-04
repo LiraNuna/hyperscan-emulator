@@ -27,7 +27,7 @@ and[.c]      | 010000 |   |
 or[.c]       | 010001 |   |
 not[.c]      | 010010 |   |
 xor[.c]      | 010011 |   |
-               010100       // MISSING (probably bitclr)
+bitclr[.c]   | 010100       // Missing from doc, binutils shows it to be 010100
 bitset[.c]   | 010101 |   | // Missing from doc, binutils shows it to be 010101
 bittst.c     | 010110 | 1 | // Missing from doc, binutils shows it to be 010110
 bittgl[.c]   | 010111 |   | // Missing from doc, binutils shows it to be 010111
