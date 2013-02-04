@@ -27,10 +27,10 @@ and[.c]      | 010000 |   |
 or[.c]       | 010001 |   |
 not[.c]      | 010010 |   |
 xor[.c]      | 010011 |   |
-               010100       // MISSING
-bitset.c     | 010101 |   | // Missing from doc, binutils shows it to be 010101
-bittst.c     | 010110 | 1 |
-               010111       // MISSING
+               010100       // MISSING (probably bitclr)
+bitset[.c]   | 010101 |   | // Missing from doc, binutils shows it to be 010101
+bittst.c     | 010110 | 1 | // Missing from doc, binutils shows it to be 010110
+bittgl[.c]   | 010111 |   | // Missing from doc, binutils shows it to be 010111
 sll[.c]      | 011000 |   |
                011001       // MISSING
 srl[.c]      | 011010 |   |
@@ -198,11 +198,18 @@ sh rD, [rA]+, imm12  | 101 |
 lbu rD, [rA]+, imm12 | 110 |
 sb rD, [rA]+, imm12  | 111 |
 
-OP = 01000 | addri[.c]
-OP = 01100 | andri[.c]
-OP = 01101 | orri[.c]
-OP = 10010 | lhu rD, [rA, imm15]
+OP = 01000 | addri[.c] rD, rA, imm14
+OP = 01001 |
+OP = 01010 |
+OP = 01011 |
+OP = 01100 | andri[.c] rD, rA, imm14
+OP = 01101 | orri[.c] rD, rA, imm14
+OP = 01110 |
+OP = 01111 |
 OP = 10000 | lw rD, [rA, imm15]
+OP = 10001 | lh rD, [rA, imm15]
+OP = 10010 | lhu rD, [rA, imm15]
+OP = 10011 | lb rD, [rA, imm15]
 OP = 10100 | sw rD, [rA, imm15]
 OP = 10101 | sh rD, [rA, imm15]
 OP = 10110 | lbu rD, [rA, imm15]
