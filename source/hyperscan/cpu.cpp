@@ -136,6 +136,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x05: rD = bit_or(rD, insn.iform.Imm16, insn.iform.CU); break;
 					// ldi.c rD, imm16
 					case 0x06: rD = sign_extend(insn.iform.Imm16, 16); break;
+
+					default: debugDump();
 				}
 			} break;
 		case 0x02: {
@@ -170,6 +172,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x06: rD = miu.readU8(rA); break;
 					// sb rD, [rA, imm12]+
 					case 0x07: miu.writeU8(rA, rD); break;
+
+					default: debugDump();
 				}
 			} break;
 		case 0x04: {
@@ -194,6 +198,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x05: rD = bit_or(rD, insn.iform.Imm16, insn.iform.CU); break;
 					// ldis.c rD, imm16
 					case 0x06: rD = insn.iform.Imm16; break;
+
+					default: debugDump();
 				}
 			} break;
 		case 0x06:
@@ -219,6 +225,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x06: rD = miu.readU8(rA); break;
 					// sb rD, [rA]+, imm12
 					case 0x07: miu.writeU8(rA, rD); break;
+
+					default: debugDump();
 				}
 				// Post-increment
 				rA += sign_extend(insn.rixform.Imm12, 12);
