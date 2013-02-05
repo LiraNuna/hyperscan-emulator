@@ -207,9 +207,18 @@ void CPU::exec32(const Instruction32 &insn) {
 					default: debugDump();
 				}
 			} break;
-		case 0x06:
-				// TODO: co-processor, rte, drte, sleep
-			break;
+		case 0x06: {
+				uint32_t &rD = r[insn.crform.rD];
+				uint32_t &crA = cr[insn.crform.crA];
+				switch(insn.crform.CR_OP) {
+					// mtcr rD, crA
+					case 0x00: crA = rD; break;
+					// mfcr rD, crA
+					case 0x01: rD = crA; break;
+
+					default: debugDump();
+				}
+			} break;
 		case 0x07: {
 				uint32_t &rD = r[insn.rixform.rD];
 				uint32_t &rA = r[insn.rixform.rA];

@@ -50,6 +50,8 @@ int main() {
 	mmio->memory[0x07006C] = 1;
 	// XXX: P_UART_Status: FIFO clear
 	mmio->memory[0x150010] = 0;
+	// XXX: Debug control register
+	cpu.cr29 = 0xFFFFFFFF;
 
 	// Firmware entry point
 	cpu.pc = 0x9F000000;

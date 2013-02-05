@@ -79,7 +79,14 @@ class CPU {
 			// TODO: CENew
 			// TODO: CR-form
 
-			// TODO: mtc/mfc
+			struct crform {
+				uint32_t CR_OP      :  8;
+				uint32_t            :  7;
+				uint32_t crA        :  5;
+				uint32_t rD         :  5;
+				uint32_t OP         :  5;
+			} crform;
+
 			// TODO: ldc/stc
 			// TODO: cop
 
