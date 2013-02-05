@@ -561,6 +561,11 @@ void CPU::debugDump() {
 		printf("\n");
 	}
 
+	FILE* memdump = fopen("MEMDUMP", "wb");
+	for(int i=0; i<0x01000000; ++i)
+		fputc(miu.readU8(0xA0000000 + i), memdump);
+	fclose(memdump);
+
 	exit(1);
 }
 
