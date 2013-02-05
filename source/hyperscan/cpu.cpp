@@ -6,7 +6,7 @@
 extern void spg290_insn16(hyperscan::CPU &cpu, uint16_t insn);
 
 // Sign extends x to the size of b bits
-static uint32_t sign_extend(uint32_t x, uint8_t b) {
+static int32_t sign_extend(uint32_t x, uint8_t b) {
 	uint32_t m = 1UL << (b - 1);
 
 	x = x & ((1UL << b) - 1);
