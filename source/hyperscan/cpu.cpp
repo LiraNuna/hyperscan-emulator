@@ -333,6 +333,9 @@ void CPU::exec32(const Instruction32 &insn) {
 
 				miu.writeU8(rA + imm15, rD);
 			} break;
+		case 0x18:
+				// cache op, [rA, imm15]
+			break;
 		default: debugDump();
 	}
 }
