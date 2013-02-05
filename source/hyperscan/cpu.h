@@ -97,37 +97,51 @@ class CPU {
 
 			}
 
-			struct {
+			struct bxform {
 				uint16_t Imm8		:  8;
 				uint16_t EC			:  4;
 				uint16_t OP			:  3;
 			} bxform;
 
-			struct {
+			struct jform {
 				uint16_t LK			:  1;
 				uint16_t Disp11		: 11;
 				uint16_t OP			:  3;
 			} jform;
 
-			struct {
+			struct rform {
 				uint16_t func4		:  4;
 				uint16_t rA			:  4;
 				uint16_t rD			:  4;
 				uint16_t OP			:  3;
 			} rform;
 
-			struct {
+			// Not in docs. rDh access
+			struct rhform {
+				uint16_t func4		:  4;
+				uint16_t rA			:  3;
+				uint16_t H          :  1;
+				uint16_t rD			:  4;
+				uint16_t OP			:  3;
+			} rhform;
+
+			struct iform1 {
 				uint16_t func3		:  3;
 				uint16_t Imm5		:  5;
 				uint16_t rD			:  4;
 				uint16_t OP			:  3;
 			} iform1;
 
-			struct {
+			struct iform2 {
 				uint16_t Imm8		:  8;
 				uint16_t rD			:  4;
 				uint16_t OP			:  3;
 			} iform2;
+
+			struct {
+				uint32_t			: 12;
+				uint32_t OP			:  3;
+			};
 
 			uint16_t encoded;
 		};

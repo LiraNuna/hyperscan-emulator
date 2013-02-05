@@ -329,7 +329,94 @@ void CPU::exec32(const Instruction32 &insn) {
 }
 
 void CPU::exec16(const Instruction16 &insn) {
-	spg290_insn16(*this, insn.encoded);
+	switch(insn.OP) {
+		case 0x00:
+				switch(insn.rform.func4) {
+					// nop!
+					case 0x00: /* noting */ break;
+					// mlfh! rDg0, rAg1
+					case 0x01: g0[insn.rform.rD] = g1[insn.rform.rA]; break;
+					// mhfl! rDg1, rAg0
+					case 0x02: g1[insn.rform.rD] = g0[insn.rform.rA]; break;
+					// mv! rDg0, rAg0
+					case 0x03: g0[insn.rform.rD] = g0[insn.rform.rA]; break;
+					// br{cond}! rAg0
+					case 0x04: if(conditional(insn.rform.rD)) pc = g0[insn.rform.rA] - 2; break;
+					// t{cond}!
+					case 0x05: T = conditional(insn.rform.rD); break;
+
+					default: debugDump();
+				}
+			break;
+		case 0x02: {
+				uint32_t &rA = g0[insn.rform.rA];
+				uint32_t &rD = g0[insn.rform.rD];
+				switch(insn.rform.func4) {
+					// add! rDg0, rAg0
+					case 0x00: rD = add(rD, rA, true); break;
+					// sub! rDg0, rAg0
+					case 0x01: rD = sub(rD, rA, true); break;
+					// neg! rDg0, rAg0
+					case 0x02: rD = sub(0, rA, true); break;
+					// cmp! rDg0, rAg0
+					case 0x03: sub(rD, rA, true); break;
+					// and! rDg0, rAg0
+					case 0x04: rD = bit_and(rD, rA, true); break;
+					// or! rDg0, rAg0
+					case 0x05: rD = bit_or(rD, rA, true); break;
+					// not! rDg0, rAg0
+					case 0x06: rD = bit_xor(rA, ~0, true); break;
+					// xor! rDg0, rAg0
+					case 0x07: rD = bit_xor(rD, rA, true); break;
+					// lw! rDg0, [rAg0]
+					case 0x08: rD = miu.readU32(rA); break;
+					// lh! rDg0, [rAg0]
+					case 0x09: rD = sign_extend(miu.readU16(rA), 16); break;
+					// pop! rDgh, [rAg0]
+					case 0x0A: g[insn.rhform.H][insn.rhform.rD] = miu.readU32(g0[insn.rhform.rA]); g0[insn.rhform.rA] += 4; break;
+					// lbu! rDg0, [rAg0]
+					case 0x0B: rD = miu.readU8(rA); break;
+					// sw! rDg0, [rAg0]
+					case 0x0C: miu.writeU32(rA, rD); break;
+					// sh! rDg0, [rAg0]
+					case 0x0D: miu.writeU16(rA, rD); break;
+					// push! rDgh, [rAg0]
+					case 0x0E: miu.writeU32(g0[insn.rhform.rA] - 4, g[insn.rhform.H][insn.rhform.rD]); g0[insn.rhform.rA] -= 4; break;
+					// sb! rDg0, [rAg0]
+					case 0x0F: miu.writeU8(rA, rD); break;
+				}
+			} break;
+		case 0x03: {
+				// j[l]! imm11
+				if(insn.jform.LK)
+					r3 = pc + 4;
+
+				pc &= 0xFFFFF000;
+				pc |= (insn.jform.Disp11 << 1) - 2;
+			} break;
+		case 0x04: {
+				// b{cond}! imm8
+				if(conditional(insn.bxform.EC))
+					pc += (sign_extend(insn.bxform.Imm8, 8) << 1) - 2;
+			} break;
+		case 0x05:
+				// ldiu! imm8
+				g0[insn.iform2.rD] = insn.iform2.Imm8;
+			break;
+		case 0x06: {
+				uint32_t &rD = g0[insn.iform1.rD];
+				switch(insn.iform1.func3) {
+					case 0x04: rD = bit_and(rD, ~(1 << insn.iform1.Imm5), true); break;
+					case 0x05: rD = bit_or(rD, 1 << insn.iform1.Imm5, true); break;
+					case 0x06: bit_and(rD, 1 << insn.iform1.Imm5, true); break;
+					default: debugDump();
+				}
+			} break;
+		case 0x07: {
+				// TODO: memory with bp access
+			} break;
+		default: debugDump();
+	}
 }
 
 bool CPU::conditional(uint8_t pattern) const {
