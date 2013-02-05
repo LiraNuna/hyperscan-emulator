@@ -99,16 +99,16 @@ void CPU::exec32(const Instruction32 &insn) {
 					// xor[.c] rD, rA, rB
 					case 0x13: rD = bit_or(rA, rB, insn.spform.CU); break;
 					// bitclr[.c] rD, rA, imm5
-					case 0x14: rD = bit_and(rA, ~(1 << insn.spform.rB), insn.spform.CU);
+					case 0x14: rD = bit_and(rA, ~(1 << insn.spform.rB), insn.spform.CU); break;
 					// bitset[.c] rD, rA, imm5
-					case 0x15: rD = bit_or(rA, 1 << insn.spform.rB, insn.spform.CU);
+					case 0x15: rD = bit_or(rA, 1 << insn.spform.rB, insn.spform.CU); break;
 					// bittst.c rA, imm5
-					case 0x16: bit_and(rA, 1 << insn.spform.rB, insn.spform.CU);
+					case 0x16: bit_and(rA, 1 << insn.spform.rB, insn.spform.CU); break;
 					// bittgl[.c] rA, imm5
-					case 0x17: rD = bit_xor(rA, 1 << insn.spform.rB, insn.spform.CU);
+					case 0x17: rD = bit_xor(rA, 1 << insn.spform.rB, insn.spform.CU); break;
 
 					// mv{cond} rD, rA
-					case 0x2B: if(conditional(insn.spform.rB)) rD = rA;
+					case 0x2B: if(conditional(insn.spform.rB)) rD = rA; break;
 					// extsb[.c] rD, rA
 					case 0x2C: rD = sign_extend(rA,  8); if(insn.spform.CU) basic_flags(rD); break;
 					// extsh[.c] rD, rA
