@@ -138,7 +138,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x04: rD = bit_and(rD, insn.iform.Imm16, insn.iform.CU); break;
 					// ori.c rD, imm16
 					case 0x05: rD = bit_or(rD, insn.iform.Imm16, insn.iform.CU); break;
-					// ldi.c rD, imm16
+					// ldi rD, imm16
 					case 0x06: rD = sign_extend(insn.iform.Imm16, 16); break;
 
 					default: debugDump();
@@ -191,17 +191,18 @@ void CPU::exec32(const Instruction32 &insn) {
 			} break;
 		case 0x05: {
 				uint32_t &rD = r[insn.iform.rD];
+				uint32_t imm16 = insn.iform.Imm16 << 16;
 				switch(insn.iform.func3) {
 					// addis[.c] rD, imm16
-					case 0x00: rD = add(rD, insn.iform.Imm16, insn.iform.CU); break;
+					case 0x00: rD = add(rD, imm16, insn.iform.CU); break;
 					// cmpis.c rD, imm16
-					case 0x02:      cmp(rD, insn.iform.Imm16, 3, insn.iform.CU); break;
+					case 0x02:      cmp(rD, imm16, 3, insn.iform.CU); break;
 					// andis.c rD, imm16
-					case 0x04: rD = bit_and(rD, insn.iform.Imm16, insn.iform.CU); break;
+					case 0x04: rD = bit_and(rD, imm16, insn.iform.CU); break;
 					// oris.c rD, imm16
-					case 0x05: rD = bit_or(rD, insn.iform.Imm16, insn.iform.CU); break;
-					// ldis.c rD, imm16
-					case 0x06: rD = insn.iform.Imm16; break;
+					case 0x05: rD = bit_or(rD, imm16, insn.iform.CU); break;
+					// ldis rD, imm16
+					case 0x06: rD = imm16; break;
 
 					default: debugDump();
 				}
