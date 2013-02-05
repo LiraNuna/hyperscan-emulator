@@ -62,7 +62,7 @@ class CPU {
 
 			struct rixform {
 				uint32_t func3		:  3;
-				uint32_t Imm12		: 14;
+				uint32_t Imm12		: 12;
 				uint32_t rA			:  5;
 				uint32_t rD			:  5;
 				uint32_t OP			:  5;
