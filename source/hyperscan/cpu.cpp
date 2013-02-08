@@ -360,6 +360,8 @@ void CPU::exec16(const Instruction16 &insn) {
 		case 0x02: {
 				uint32_t &rA = g0[insn.rform.rA];
 				uint32_t &rD = g0[insn.rform.rD];
+				uint32_t &rAh = g0[insn.rhform.rA];
+				uint32_t &rDh = g[insn.rhform.H][insn.rhform.rD];
 				switch(insn.rform.func4) {
 					// add! rDg0, rAg0
 					case 0x00: rD = add(rD, rA, true); break;
@@ -382,7 +384,7 @@ void CPU::exec16(const Instruction16 &insn) {
 					// lh! rDg0, [rAg0]
 					case 0x09: rD = sign_extend(miu.readU16(rA), 16); break;
 					// pop! rDgh, [rAg0]
-					case 0x0A: g[insn.rhform.H][insn.rhform.rD] = miu.readU32(g0[insn.rhform.rA]); g0[insn.rhform.rA] += 4; break;
+					case 0x0A: rDh = miu.readU32(rAh); rAh += 4; break;
 					// lbu! rDg0, [rAg0]
 					case 0x0B: rD = miu.readU8(rA); break;
 					// sw! rDg0, [rAg0]
@@ -390,7 +392,7 @@ void CPU::exec16(const Instruction16 &insn) {
 					// sh! rDg0, [rAg0]
 					case 0x0D: miu.writeU16(rA, rD); break;
 					// push! rDgh, [rAg0]
-					case 0x0E: miu.writeU32(g0[insn.rhform.rA] - 4, g[insn.rhform.H][insn.rhform.rD]); g0[insn.rhform.rA] -= 4; break;
+					case 0x0E: miu.writeU32(rAh -= 4, rDh); break;
 					// sb! rDg0, [rAg0]
 					case 0x0F: miu.writeU8(rA, rD); break;
 				}
