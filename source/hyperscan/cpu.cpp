@@ -40,7 +40,6 @@ void CPU::reset_registers() {
 }
 
 void CPU::step() {
-	int instructionSize = 2;
 	uint32_t instruction = miu.readU16(pc);
 
 	// Pre-decode the instruction
@@ -50,16 +49,14 @@ void CPU::step() {
 		instruction |= miu.readU16(pc + 2) << 15;
 		instruction &= 0x3FFFFFFF;
 
-		instructionSize += 2;
-
 		exec32(instruction);
+		pc += 4;
 	} else {
 		// p0 bit is not present and there is no next instruction
 		// TODO: if p1 bit is in next 16bit instruction, parallel execution mode
 		exec16(instruction);
+		pc += 2;
 	}
-
-	pc += instructionSize;
 }
 
 void CPU::exec32(const Instruction32 &insn) {
