@@ -418,6 +418,8 @@ void CPU::exec16(const Instruction16 &insn) {
 				uint32_t &rD = g0[insn.iform1.rD];
 				uint32_t imm = 1 << insn.iform1.Imm5;
 				switch(insn.iform1.func3) {
+					// srli! rD, imm5
+					case 0x03: rD = shift_right(rD, insn.iform1.Imm5, true); break;
 					// bitclr! rD, imm5
 					case 0x04: rD = bit_and(rD, ~imm, true); break;
 					// bitset! rD, imm5
