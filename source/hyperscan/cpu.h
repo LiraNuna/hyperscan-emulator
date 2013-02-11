@@ -177,6 +177,11 @@ class CPU {
 		 */
 		void step();
 
+		/**
+		 * Causes an interrupt to fire
+		 */
+		void interrupt(uint8_t cause);
+
 //	protected:
 		void exec16(const Instruction16 &insn);
 

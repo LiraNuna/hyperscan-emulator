@@ -59,6 +59,22 @@ void CPU::step() {
 	}
 }
 
+void CPU::interrupt(uint8_t cause) {
+	// Don't fire if interrupts are disabled
+	if(!(cr0 & 1))
+		return;
+
+	// Set cause in cr2
+	cr2 &= ~0x03F00000;
+	cr2 |= (cause & 0x3F) << 20;
+
+	// Save old PC
+	cr5 = pc;
+
+	// Jump to interrupt
+	pc = cr3 + 0x1FC + (cause * 4);
+}
+
 void CPU::exec32(const Instruction32 &insn) {
 	switch(insn.OP) {
 		case 0x00: {
