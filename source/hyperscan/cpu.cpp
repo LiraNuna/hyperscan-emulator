@@ -121,7 +121,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x17: rD = bit_xor(rA, 1 << insn.spform.rB, insn.spform.CU); break;
 
 					// mfce{hl} rD[, rA]
-					case 0x28:
+					case 0x24:
 							switch(insn.spform.rB) {
 								case 0x01: rD = CEL; break;
 								case 0x02: rD = CEH; break;
@@ -129,13 +129,14 @@ void CPU::exec32(const Instruction32 &insn) {
 							}
 						break;
 					// mtce{hl} rD[, rA]
-					case 0x29:
+					case 0x25:
 							switch(insn.spform.rB) {
 								case 0x01: CEL = rD; break;
 								case 0x02: CEH = rD; break;
 								case 0x03: CEH = rD; CEL = rA; break;
 							}
 						break;
+
 					// t{cond}
 					case 0x2A: T = conditional(insn.spform.rB); break;
 					// mv{cond} rD, rA
