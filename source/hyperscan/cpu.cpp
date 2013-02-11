@@ -104,6 +104,24 @@ void CPU::exec32(const Instruction32 &insn) {
 					// bittgl[.c] rA, imm5
 					case 0x17: rD = bit_xor(rA, 1 << insn.spform.rB, insn.spform.CU); break;
 
+					// mfce{hl} rD[, rA]
+					case 0x28:
+							switch(insn.spform.rB) {
+								case 0x01: rD = CEL; break;
+								case 0x02: rD = CEH; break;
+								case 0x03: rD = CEH; rA = CEL; break;
+							}
+						break;
+					// mtce{hl} rD[, rA]
+					case 0x29:
+							switch(insn.spform.rB) {
+								case 0x01: CEL = rD; break;
+								case 0x02: CEH = rD; break;
+								case 0x03: CEH = rD; CEL = rA; break;
+							}
+						break;
+					// t{cond}
+					case 0x2A: T = conditional(insn.spform.rB); break;
 					// mv{cond} rD, rA
 					case 0x2B: if(conditional(insn.spform.rB)) rD = rA; break;
 					// extsb[.c] rD, rA
@@ -357,6 +375,28 @@ void CPU::exec16(const Instruction16 &insn) {
 					default: debugDump();
 				}
 			break;
+		case 0x01: {
+				uint32_t &rA = g0[insn.rform.rA];
+//				uint32_t &rD = g0[insn.rform.rD];
+				switch(insn.rform.func4) {
+					// mtce{lh}! rA
+					case 0x00:
+							switch(insn.rform.rD) {
+								case 0x00: CEL = rA; break;
+								case 0x01: CEH = rA; break;
+							}
+						break;
+					// mfce{lh}! rA
+					case 0x01:
+							switch(insn.rform.rD) {
+								case 0x00: rA = CEL; break;
+								case 0x01: rA = CEH; break;
+							}
+						break;
+
+					default: debugDump();
+				}
+			} break;
 		case 0x02: {
 				uint32_t &rA = g0[insn.rform.rA];
 				uint32_t &rD = g0[insn.rform.rD];

@@ -259,6 +259,9 @@ class CPU {
 		// Flags
 		bool N, Z, C, V, T;
 
+		// Custom Engine Registers
+		uint32_t CEH, CEL;
+
 		// Program Counter
 		uint32_t pc;
 

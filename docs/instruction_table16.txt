@@ -11,6 +11,24 @@
 	1001 - addc
 	1010 - srl
 	1011 - sra
+	
+001
+	0000 - mtce{lh}!
+	0001 - mfce{lh}!
+	0010 - mul.f!
+	0011 - mulu!
+	0100 - mad.f!
+	0101 - madu!
+	0110 - msb.f!
+	0111 - msbu!
+	1000 - mazl.f!
+	1001 - mazh.f!
+	1010 - madl.fs!
+	1011 - madh.fs!
+	1100 - mszl.f!
+	1101 - mszh.f!
+	1110 - msbl.fs!
+	1111 - msbh.fs!
 
 010
 	0000 - add
