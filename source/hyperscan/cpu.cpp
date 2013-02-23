@@ -247,6 +247,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x00: crA = rD; break;
 					// mfcr rD, crA
 					case 0x01: rD = crA; break;
+					// rte
+					case 0x84: pc = cr5 - 4; /* TODO: missing PSR */ break;
 
 					default: debugDump();
 				}
