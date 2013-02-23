@@ -14,9 +14,6 @@ namespace memory {
 template <unsigned segment_bit_size, unsigned segment_data_bit_size >
 class SegmentedMemoryRegion : public MemoryRegion<segment_bit_size + segment_data_bit_size > {
 	protected:
-		// Segment type
-		typedef MemoryRegion<segment_data_bit_size > Segment;
-
 		/**
 		 * Since not all segments are used, this defines an unsued memory region
 		 * TODO: Figure out what real hardware does when accessing unmapped address
@@ -55,12 +52,19 @@ class SegmentedMemoryRegion : public MemoryRegion<segment_bit_size + segment_dat
 		UnmappedMemoryRegion* unmappedSegment;
 
 	public:
-		static constexpr unsigned TOTAL_SIZE  = (1 << (segment_bit_size + segment_data_bit_size));
+		static constexpr unsigned SEGMENT_BITS = segment_bit_size;
+		static constexpr unsigned DATA_BITS    = segment_data_bit_size;
+		static constexpr unsigned TOTAL_BITS   = SEGMENT_BITS + DATA_BITS;
+
+		static constexpr unsigned TOTAL_SIZE  = (1 << TOTAL_BITS);
 		static constexpr unsigned ACCESS_MASK = TOTAL_SIZE - 1;
 
 		static constexpr unsigned SEGMENT_COUNT       = (1 << segment_bit_size);
 		static constexpr unsigned SEGMENT_SIZE        = (1 << segment_data_bit_size);
 		static constexpr unsigned SEGMENT_ACCESS_MASK = SEGMENT_SIZE - 1;
+
+		// Segment type
+		typedef MemoryRegion<segment_data_bit_size > Segment;
 
 		SegmentedMemoryRegion() {
 			unmappedSegment = new UnmappedMemoryRegion();

@@ -1,6 +1,8 @@
 #ifndef __HYPERSCAN_MEMORY_MEMORYREGION_H__
 #define __HYPERSCAN_MEMORY_MEMORYREGION_H__
 
+#include <stdint.h>
+
 namespace hyperscan {
 
 namespace memory {

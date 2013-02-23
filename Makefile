@@ -14,8 +14,10 @@
 TARGET		:=	$(shell basename $(CURDIR))
 EXT			:=	
 BUILD		:=	.build
+INCLUDES	:=	source
 SOURCES		:=	source \
 				source/hyperscan \
+				source/hyperscan/io \
 				source/hyperscan/memory
 PACKAGES	:=	
 

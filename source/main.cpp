@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "hyperscan/cpu.h"
+#include "hyperscan/io/io.h"
 #include "hyperscan/memory/arraymemoryregion.h"
 
 using namespace hyperscan;
@@ -31,11 +32,11 @@ memory::ArrayMemoryRegion<24 >* createFileMemoryRegion(const char* fileName) {
 }
 
 int main() {
-	hyperscan::CPU cpu;
+	CPU cpu;
 
 	memory::ArrayMemoryRegion<24 >* firmware = createFileMemoryRegion("roms/hsfirmware.bin");
 	memory::ArrayMemoryRegion<24 >* ram = new memory::ArrayMemoryRegion<24 >();
-	memory::ArrayMemoryRegion<24 >* mmio = new memory::ArrayMemoryRegion<24 >();
+	io::IOMemoryRegion* mmio = new io::IOMemoryRegion();
 
 	cpu.miu.setRegion(0x9E, firmware);
 	cpu.miu.setRegion(0x9F, firmware);
@@ -46,10 +47,10 @@ int main() {
 	cpu.miu.setRegion(0x08, mmio);
 	cpu.miu.setRegion(0x88, mmio);
 
-	// XXX: P_MIU_STATUS: self refresh
-	mmio->memory[0x07006C] = 1;
-	// XXX: P_UART_Status: FIFO clear
-	mmio->memory[0x150010] = 0;
+//	// XXX: P_MIU_STATUS: self refresh
+//	mmio->memory[0x07006C] = 1;
+//	// XXX: P_UART_Status: FIFO clear
+//	mmio->memory[0x150010] = 0;
 	// XXX: Debug control register
 	cpu.cr29 = 0x20000000;
 
