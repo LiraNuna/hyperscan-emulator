@@ -109,8 +109,8 @@ void CPU::exec32(const Instruction32 &insn) {
 					// cmpz{tcs}.c rA, rB
 					case 0x0D:      cmp(rA, 0, insn.spform.rD & 0x03, insn.spform.CU); break;
 
-					// not[.c] rD, rA
-					case 0x0F: rD = bit_xor(rA, ~0, insn.spform.CU); break;
+					// neg[.c] rD, rA
+					case 0x0F: rD = sub(0, rA, insn.spform.CU); break;
 					// and[.c] rD, rA, rB
 					case 0x10: rD = bit_and(rA, rB, insn.spform.CU); break;
 					// or[.c] rD, rA, rB
