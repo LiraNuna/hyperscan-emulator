@@ -62,8 +62,8 @@ void CPU::interrupt(uint8_t cause) {
 		return;
 
 	// Set cause in cr2
-	cr2 &= ~0x03F00000;
-	cr2 |= (cause & 0x3F) << 20;
+	cr2 &= ~0x00FC0000;
+	cr2 |= (cause & 0x3F) << 18;
 
 	// Save old PC
 	cr5 = pc;
