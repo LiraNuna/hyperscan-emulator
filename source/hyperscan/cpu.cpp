@@ -116,6 +116,12 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x16: bit_and(rA, 1 << insn.spform.rB, insn.spform.CU); break;
 					// bittgl[.c] rA, imm5
 					case 0x17: rD = bit_xor(rA, 1 << insn.spform.rB, insn.spform.CU); break;
+					// sll[.c] rA, imm5
+					case 0x18: rD = sll(rA, insn.spform.rB, insn.spform.CU); break;
+					// srl[.c] rA, imm5
+					case 0x1A: rD = srl(rA, insn.spform.rB, insn.spform.CU); break;
+					// sra[.c] rA, imm5
+					case 0x1B: rD = sra(rA, insn.spform.rB, insn.spform.CU); break;
 
 					// mfce{hl} rD[, rA]
 					case 0x24:
@@ -148,10 +154,12 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x2F: rD = bit_and(rA, 0x0000FFFF, insn.spform.CU); break;
 
 					// slli[.c] rD, rA, imm5
-					case 0x38: rD = shift_left(rA, insn.spform.rB, insn.spform.CU); break;
+					case 0x38: rD = sll(rA, insn.spform.rB, insn.spform.CU); break;
 
 					// srli[.c] rD, rA, imm5
-					case 0x3A: rD = shift_right(rA, insn.spform.rB, insn.spform.CU); break;
+					case 0x3A: rD = srl(rA, insn.spform.rB, insn.spform.CU); break;
+					// srai[.c] rD, rA, imm5
+					case 0x3B: rD = sra(rA, insn.spform.rB, insn.spform.CU); break;
 
 					default: debugDump();
 				}
@@ -475,7 +483,7 @@ void CPU::exec16(const Instruction16 &insn) {
 				uint32_t imm = 1 << insn.iform1.Imm5;
 				switch(insn.iform1.func3) {
 					// srli! rD, imm5
-					case 0x03: rD = shift_right(rD, insn.iform1.Imm5, true); break;
+					case 0x03: rD = srl(rD, insn.iform1.Imm5, true); break;
 					// bitclr! rD, imm5
 					case 0x04: rD = bit_and(rD, ~imm, true); break;
 					// bitset! rD, imm5
@@ -605,7 +613,7 @@ uint32_t CPU::bit_xor(uint32_t a, uint32_t b, bool flags) {
 	return res;
 }
 
-uint32_t CPU::shift_left(uint32_t a, uint8_t sa, bool flags) {
+uint32_t CPU::sll(uint32_t a, uint8_t sa, bool flags) {
 	uint32_t res = a << sa;
 	if(flags) {
 		basic_flags(res);
@@ -615,8 +623,18 @@ uint32_t CPU::shift_left(uint32_t a, uint8_t sa, bool flags) {
 	return res;
 }
 
-uint32_t CPU::shift_right(uint32_t a, uint8_t sa, bool flags) {
+uint32_t CPU::srl(uint32_t a, uint8_t sa, bool flags) {
 	uint32_t res = a >> sa;
+	if(flags) {
+		basic_flags(res);
+		C = a & (1 << (sa - 1)); // XXX: Docs say this is right, but what if sa is 0?
+	}
+
+	return res;
+}
+
+uint32_t CPU::sra(uint32_t a, uint8_t sa, bool flags) {
+	uint32_t res = int32_t(a) >> sa;
 	if(flags) {
 		basic_flags(res);
 		C = a & (1 << (sa - 1)); // XXX: Docs say this is right, but what if sa is 0?

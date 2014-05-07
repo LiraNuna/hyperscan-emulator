@@ -207,9 +207,11 @@ class CPU {
 
 		uint32_t bit_xor(uint32_t a, uint32_t b, bool flags);
 
-		uint32_t shift_left(uint32_t a, uint8_t sa, bool flags);
+		uint32_t sll(uint32_t a, uint8_t sa, bool flags);
 
-		uint32_t shift_right(uint32_t a, uint8_t sa, bool flags);
+		uint32_t srl(uint32_t a, uint8_t sa, bool flags);
+
+		uint32_t sra(uint32_t a, uint8_t sa, bool flags);
 
 	private:
 		void debugDump();
