@@ -72,6 +72,17 @@ void CPU::interrupt(uint8_t cause) {
 	pc = cr3 + 0x1FC + (cause * 4);
 }
 
+void CPU::branch(uint32_t address, bool lk) {
+	if (lk)
+		link();
+
+	pc = address;
+}
+
+void CPU::link() {
+	r3 = pc + 4;
+}
+
 void CPU::exec32(const Instruction32 &insn) {
 	switch(insn.OP) {
 		case 0x00: {
@@ -83,7 +94,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x00: /* nothing */ break;
 
 					// br{cond}[l] rA
-					case 0x04: if(conditional(insn.spform.rB)) pc = rA - 4; break;
+					case 0x04: if(conditional(insn.spform.rB)) branch(rA - 4, insn.spform.CU); break;
 
 					// add[.c] rD, rA, rB
 					case 0x08: rD = add(rA, rB, insn.spform.CU); break;
@@ -184,7 +195,7 @@ void CPU::exec32(const Instruction32 &insn) {
 		case 0x02: {
 				// j[l] imm24
 				if(insn.jform.LK)
-					r3 = pc + 4;
+					link();
 
 				// Update PC
 				pc &= 0xFC000000;
@@ -221,7 +232,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// b{cond}[l]
 				if(conditional(insn.bcform.BC)) {
 					if(insn.bcform.LK)
-						r3 = pc + 4;
+						link();
 
 					pc += sign_extend(((insn.bcform.Disp18_9 << 9) | insn.bcform.Disp8_0) << 1, 20) - 4;
 				}
@@ -253,7 +264,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					// mfcr rD, crA
 					case 0x01: rD = crA; break;
 					// rte
-					case 0x84: pc = cr5 - 4; /* TODO: missing PSR */ break;
+					case 0x84: branch(cr5 - 4, false); /* TODO: missing PSR */ break;
 
 					default: debugDump();
 				}
@@ -392,7 +403,7 @@ void CPU::exec16(const Instruction16 &insn) {
 					// mv! rDg0, rAg0
 					case 0x03: g0[insn.rform.rD] = g0[insn.rform.rA]; break;
 					// br{cond}! rAg0
-					case 0x04: if(conditional(insn.rform.rD)) pc = g0[insn.rform.rA] - 2; break;
+					case 0x04: if(conditional(insn.rform.rD)) branch(g0[insn.rform.rA] - 2, false); break;
 					// t{cond}!
 					case 0x05: T = conditional(insn.rform.rD); break;
 
@@ -464,7 +475,7 @@ void CPU::exec16(const Instruction16 &insn) {
 		case 0x03: {
 				// j[l]! imm11
 				if(insn.jform.LK)
-					r3 = pc + 4;
+					link();
 
 				pc &= 0xFFFFF000;
 				pc |= (insn.jform.Disp11 << 1) - 2;
