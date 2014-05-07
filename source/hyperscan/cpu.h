@@ -267,6 +267,19 @@ class CPU {
 			uint32_t cr[32];
 		};
 
+		// Special registers
+		union {
+			struct {
+				uint32_t sr0, sr1, sr2;
+			};
+
+			struct {
+				uint32_t CNT, LCR, SCR;
+			};
+
+			uint32_t sr[3];
+		};
+
 		// Flags
 		bool N, Z, C, V, T;
 
