@@ -34,6 +34,9 @@ void CPU::reset_registers() {
 	std::fill(cr, cr + 32, 0);
 	std::fill(sr, sr + 32, 0);
 
+	CEH = 0;
+	CEL = 0;
+
 	pc = 0;
 }
 
@@ -134,6 +137,15 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x1A: rD = srl(rA, insn.spform.rB, insn.spform.CU); break;
 					// sra[.c] rA, imm5
 					case 0x1B: rD = sra(rA, insn.spform.rB, insn.spform.CU); break;
+
+					// mul rA, rD
+					case 0x20: ce_op(rA, rD, std::multiplies<int64_t>()); break;
+					// mulu rA, rD
+					case 0x21: ce_op(rA, rD, std::multiplies<uint64_t>()); break;
+					// div rA, rD
+					case 0x22: ce_op(rA, rD, std::divides<int64_t>()); break;
+					// divu rA, rD
+					case 0x23: ce_op(rA, rD, std::divides<uint64_t>()); break;
 
 					// mfce{hl} rD[, rA]
 					case 0x24:
@@ -573,6 +585,14 @@ void CPU::cmp(uint32_t a, uint32_t b, int tcs, bool flags) {
 		case 0x00: T = Z; break;
 		case 0x01: T = N; break;
 	}
+}
+
+template <typename Op >
+void CPU::ce_op(uint32_t a, uint32_t b, Op op) {
+	auto result = op(a, b);
+
+	CEL = result & 0xFFFFFFFF;
+	CEH = result >> 32;
 }
 
 uint32_t CPU::add(uint32_t a, uint32_t b, bool flags) {

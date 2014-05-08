@@ -197,6 +197,9 @@ class CPU {
 
 		void cmp(uint32_t a, uint32_t b, int tcs=3, bool flags=true);
 
+		template <typename Op >
+		void ce_op(uint32_t a, uint32_t b, Op op);
+
 		uint32_t add(uint32_t a, uint32_t b, bool flags);
 
 		uint32_t addc(uint32_t a, uint32_t b, bool flags);
