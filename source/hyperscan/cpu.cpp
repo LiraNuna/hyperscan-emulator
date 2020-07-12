@@ -316,7 +316,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// addri[.c] rD, rA, imm14
 				uint32_t &rD = r[insn.riform.rD];
 				uint32_t &rA = r[insn.riform.rA];
-				uint32_t imm14 = sign_extend(insn.riform.Imm14, 14);
+				int32_t imm14 = sign_extend(insn.riform.Imm14, 14);
 
 				rD = add(rA, imm14, insn.riform.CU);
 			} break;
@@ -340,7 +340,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// lw rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				rD = miu.readU32(rA + imm15);
 			} break;
@@ -348,7 +348,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// lh rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				rD = sign_extend(miu.readU16(rA + imm15), 16);
 			} break;
@@ -356,7 +356,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// lhu rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				rD = miu.readU16(rA + imm15);
 			} break;
@@ -364,7 +364,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// lb rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				rD = sign_extend(miu.readU8(rA + imm15), 8);
 			} break;
@@ -372,7 +372,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// sw rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				miu.writeU32(rA + imm15, rD);
 			} break;
@@ -380,7 +380,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// sh rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				miu.writeU16(rA + imm15, rD);
 			} break;
@@ -388,7 +388,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// lbu rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				rD = miu.readU8(rA + imm15);
 			} break;
@@ -396,7 +396,7 @@ void CPU::exec32(const Instruction32 &insn) {
 				// sb rD, [rA, imm15]
 				uint32_t &rD = r[insn.mform.rD];
 				uint32_t &rA = r[insn.mform.rA];
-				uint32_t imm15 = sign_extend(insn.mform.Imm15, 15);
+				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
 				miu.writeU8(rA + imm15, rD);
 			} break;
