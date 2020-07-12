@@ -5,7 +5,7 @@
 	0011 - mv
 	0100 - br{cond}
 	0101 - t{cond}
-	0110 - 
+	0110 - br{cond}l!  // missing from docs
 	0111 - 
 	1000 - sll
 	1001 - addc

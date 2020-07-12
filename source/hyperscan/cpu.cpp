@@ -423,6 +423,8 @@ void CPU::exec16(const Instruction16 &insn) {
 					case 0x04: if(conditional(insn.rform.rD)) branch(g0[insn.rform.rA] - 2, false); break;
 					// t{cond}!
 					case 0x05: T = conditional(insn.rform.rD); break;
+					// br{cond}l! rAg0
+					case 0x0C: if(conditional(insn.rform.rD)) branch(g0[insn.rform.rA] - 2, false); break;
 
 					default: debugDump();
 				}
