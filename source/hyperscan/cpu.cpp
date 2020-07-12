@@ -122,7 +122,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					// not[.c] rD, rA, rB
 					case 0x12: rD = bit_xor(rA, ~0, insn.spform.CU); break;
 					// xor[.c] rD, rA, rB
-					case 0x13: rD = bit_or(rA, rB, insn.spform.CU); break;
+					case 0x13: rD = bit_xor(rA, rB, insn.spform.CU); break;
 					// bitclr[.c] rD, rA, imm5
 					case 0x14: rD = bit_and(rA, ~(1 << insn.spform.rB), insn.spform.CU); break;
 					// bitset[.c] rD, rA, imm5
