@@ -76,15 +76,17 @@ void CPU::interrupt(uint8_t cause) {
 	pc = cr3 + 0x1FC + (cause * 4);
 }
 
-void CPU::branch(uint32_t address, bool lk) {
-	if (lk)
-		link();
-
-	pc = address;
+void CPU::branch(uint8_t condition, uint32_t address, bool link) {
+	if (conditional(condition)) {
+		jump(address, link);
+	}
 }
 
-void CPU::link() {
-	r3 = pc + 4;
+void CPU::jump(uint32_t address, bool link) {
+	if (link)
+		r3 = pc + 4;
+
+	pc = address;
 }
 
 void CPU::exec32(const Instruction32 &insn) {
@@ -98,7 +100,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					case 0x00: /* nothing */ break;
 
 					// br{cond}[l] rA
-					case 0x04: if(conditional(insn.spform.rB)) branch(rA - 4, insn.spform.CU); break;
+					case 0x04: branch(insn.spform.rB, rA - 4, insn.spform.CU); break;
 
 					// add[.c] rD, rA, rB
 					case 0x08: rD = add(rA, rB, insn.spform.CU); break;
@@ -211,12 +213,7 @@ void CPU::exec32(const Instruction32 &insn) {
 			} break;
 		case 0x02: {
 				// j[l] imm24
-				if(insn.jform.LK)
-					link();
-
-				// Update PC
-				pc &= 0xFC000000;
-				pc |= (insn.jform.Disp24 << 1) - 4;
+				jump(((pc & 0xFC000000) | (insn.jform.Disp24 << 1)) - 4, insn.jform.LK);
 			} break;
 		case 0x03: {
 				uint32_t &rD = r[insn.rixform.rD];
@@ -247,12 +244,8 @@ void CPU::exec32(const Instruction32 &insn) {
 			} break;
 		case 0x04: {
 				// b{cond}[l]
-				if(conditional(insn.bcform.BC)) {
-					if(insn.bcform.LK)
-						link();
-
-					pc += sign_extend(((insn.bcform.Disp18_9 << 9) | insn.bcform.Disp8_0) << 1, 20) - 4;
-				}
+				int32_t disp = sign_extend(((insn.bcform.Disp18_9 << 9) | insn.bcform.Disp8_0) << 1, 20);
+				branch(insn.bcform.BC, pc + disp - 4, insn.bcform.LK);
 			} break;
 		case 0x05: {
 				uint32_t &rD = r[insn.iform.rD];
@@ -281,7 +274,7 @@ void CPU::exec32(const Instruction32 &insn) {
 					// mfcr rD, crA
 					case 0x01: rD = crA; break;
 					// rte
-					case 0x84: branch(cr5 - 4, false); /* TODO: missing PSR */ break;
+					case 0x84: jump(cr5 - 4, false); /* TODO: missing PSR */ break;
 
 					default: debugDump();
 				}
@@ -420,11 +413,11 @@ void CPU::exec16(const Instruction16 &insn) {
 					// mv! rDg0, rAg0
 					case 0x03: g0[insn.rform.rD] = g0[insn.rform.rA]; break;
 					// br{cond}! rAg0
-					case 0x04: if(conditional(insn.rform.rD)) branch(g0[insn.rform.rA] - 2, false); break;
+					case 0x04: branch(insn.rform.rD, g0[insn.rform.rA] - 2, false); break;
 					// t{cond}!
 					case 0x05: T = conditional(insn.rform.rD); break;
 					// br{cond}l! rAg0
-					case 0x0C: if(conditional(insn.rform.rD)) branch(g0[insn.rform.rA] - 2, false); break;
+					case 0x0C: branch(insn.rform.rD, g0[insn.rform.rA] - 2, false); break;
 
 					default: debugDump();
 				}
@@ -491,19 +484,14 @@ void CPU::exec16(const Instruction16 &insn) {
 					case 0x0F: miu.writeU8(rA, rD); break;
 				}
 			} break;
-		case 0x03: {
+		case 0x03:
 				// j[l]! imm11
-				if(insn.jform.LK)
-					link();
-
-				pc &= 0xFFFFF000;
-				pc |= (insn.jform.Disp11 << 1) - 2;
-			} break;
-		case 0x04: {
+				jump(((pc & 0xFFFFF000) | (insn.jform.Disp11 << 1)) - 2, insn.jform.LK);
+			break;
+		case 0x04:
 				// b{cond}! imm8
-				if(conditional(insn.bxform.EC))
-					pc += (sign_extend(insn.bxform.Imm8, 8) << 1) - 2;
-			} break;
+				branch(insn.bxform.EC, pc + (sign_extend(insn.bxform.Imm8, 8) << 1) - 2, false);
+			break;
 		case 0x05:
 				// ldiu! imm8
 				g0[insn.iform2.rD] = insn.iform2.Imm8;

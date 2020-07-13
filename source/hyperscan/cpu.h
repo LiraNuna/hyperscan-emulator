@@ -187,9 +187,9 @@ class CPU {
 
 		void exec32(const Instruction32 &insn);
 
-		void branch(uint32_t address, bool link);
+		void jump(uint32_t address, bool link);
 
-		void link();
+		void branch(uint8_t condition, uint32_t address, bool link);
 
 		bool conditional(uint8_t pattern) const;
 
