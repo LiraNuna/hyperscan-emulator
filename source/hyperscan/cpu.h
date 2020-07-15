@@ -9,7 +9,7 @@
 namespace hyperscan {
 
 class CPU {
-	protected:
+	public:
 		union Instruction32 {
 			Instruction32(uint32_t encoded):
 				encoded(encoded) {
@@ -153,7 +153,6 @@ class CPU {
 			uint16_t encoded;
 		};
 
-	public:
 		CPU();
 
 		/**
