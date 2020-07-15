@@ -23,17 +23,17 @@ class MemoryRegion {
 		/**
 		 * Read an unsigned byte
 		 */
-		virtual uint8_t readU8(uint32_t address) = 0;
+		virtual uint8_t readU8(uint32_t address) const = 0;
 
 		/**
 		 * Read an unsigned half-word
 		 */
-		virtual uint16_t readU16(uint32_t address) = 0;
+		virtual uint16_t readU16(uint32_t address) const = 0;
 
 		/**
 		 * Read an unsigned word
 		 */
-		virtual uint32_t readU32(uint32_t address) = 0;
+		virtual uint32_t readU32(uint32_t address) const = 0;
 
 		/**
 		 * Write an unsigned byte

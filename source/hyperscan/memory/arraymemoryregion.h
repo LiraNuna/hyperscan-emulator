@@ -31,16 +31,16 @@ class ArrayMemoryRegion: public MemoryRegion<addressable_bits > {
 
 		}
 
-		virtual uint8_t readU8(uint32_t address) {
+		virtual uint8_t readU8(uint32_t address) const {
 			return memory[address];
 		}
 
-		virtual uint16_t readU16(uint32_t address) {
+		virtual uint16_t readU16(uint32_t address) const {
 			return memory[address + 0] << 0 |
 				   memory[address + 1] << 8;
 		}
 
-		virtual uint32_t readU32(uint32_t address) {
+		virtual uint32_t readU32(uint32_t address) const {
 			return memory[address + 0] <<  0 |
 				   memory[address + 1] <<  8 |
 				   memory[address + 2] << 16 |

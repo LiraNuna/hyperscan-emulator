@@ -24,15 +24,15 @@ class SegmentedMemoryRegion : public MemoryRegion<segment_bit_size + segment_dat
 
 				}
 
-				virtual uint8_t readU8(uint32_t) {
+				virtual uint8_t readU8(uint32_t) const {
 					return -1;
 				}
 
-				virtual uint16_t readU16(uint32_t) {
+				virtual uint16_t readU16(uint32_t) const {
 					return -1;
 				}
 
-				virtual uint32_t readU32(uint32_t) {
+				virtual uint32_t readU32(uint32_t) const {
 					return -1;
 				}
 
@@ -81,17 +81,17 @@ class SegmentedMemoryRegion : public MemoryRegion<segment_bit_size + segment_dat
 				delete unmappedSegment;
 		}
 
-		virtual uint8_t readU8(uint32_t address) {
+		virtual uint8_t readU8(uint32_t address) const {
 			Segment* segment = segments[address >> segment_data_bit_size];
 			return segment->readU8(address & SEGMENT_ACCESS_MASK);
 		}
 
-		virtual uint16_t readU16(uint32_t address) {
+		virtual uint16_t readU16(uint32_t address) const {
 			Segment* segment = segments[address >> segment_data_bit_size];
 			return segment->readU16(address & SEGMENT_ACCESS_MASK);
 		}
 
-		virtual uint32_t readU32(uint32_t address) {
+		virtual uint32_t readU32(uint32_t address) const {
 			Segment* segment = segments[address >> segment_data_bit_size];
 			return segment->readU32(address & SEGMENT_ACCESS_MASK);
 		}
