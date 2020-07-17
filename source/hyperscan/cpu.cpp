@@ -32,7 +32,7 @@ void CPU::reset_flags() {
 void CPU::reset_registers() {
 	std::fill(r, r + 32, 0);
 	std::fill(cr, cr + 32, 0);
-	std::fill(sr, sr + 32, 0);
+	std::fill(sr, sr + 3, 0);
 
 	CEH = 0;
 	CEL = 0;
