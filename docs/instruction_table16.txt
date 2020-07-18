@@ -71,9 +71,9 @@
 
 111
 	000 - lwp
-	001 - lbup
+	001 - lhp // swapped with lbup in docs
 	010 - 
-	011 - lhp
+	011 - lbup // swapped with lhp in docs
 	100 - swp
 	101 - shp
 	110 - 
