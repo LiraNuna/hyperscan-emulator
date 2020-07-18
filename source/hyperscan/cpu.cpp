@@ -417,7 +417,7 @@ void CPU::exec16(const Instruction16 &insn) {
 					// t{cond}!
 					case 0x05: T = conditional(insn.rform.rD); break;
 					// br{cond}l! rAg0
-					case 0x0C: branch(insn.rform.rD, g0[insn.rform.rA] - 2, false); break;
+					case 0x0C: branch(insn.rform.rD, g0[insn.rform.rA] - 2, true); break;
 
 					default: debugDump();
 				}
