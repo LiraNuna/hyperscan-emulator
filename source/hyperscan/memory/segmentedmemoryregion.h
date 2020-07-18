@@ -111,12 +111,12 @@ class SegmentedMemoryRegion : public MemoryRegion<segment_bit_size + segment_dat
 			segment->writeU32(address & SEGMENT_ACCESS_MASK, value);
 		}
 
-		virtual void setRegion(uint8_t address, Segment* segment) {
+		void setRegion(uint8_t address, Segment* segment) {
 			segments[address] = segment;
 		}
 
 	protected:
-		std::array<Segment*, 1 << segment_bit_size > segments;
+		std::array<Segment*, SEGMENT_COUNT> segments;
 };
 
 }
