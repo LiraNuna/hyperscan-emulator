@@ -611,7 +611,7 @@ uint32_t CPU::sub(uint32_t a, uint32_t b, bool flags) {
 }
 
 uint32_t CPU::subc(uint32_t a, uint32_t b, bool flags) {
-	return sub(sub(a, b, false), ~C, flags);
+	return sub(sub(a, b, false), !C, flags);
 }
 
 uint32_t CPU::bit_and(uint32_t a, uint32_t b, bool flags) {
