@@ -140,14 +140,14 @@ void CPU::exec32(const Instruction32 &insn) {
 					// sra[.c] rA, imm5
 					case 0x1B: rD = sra(rA, insn.spform.rB, insn.spform.CU); break;
 
-					// mul rA, rD
-					case 0x20: ce_op(rA, rD, std::multiplies<int64_t>()); break;
-					// mulu rA, rD
-					case 0x21: ce_op(rA, rD, std::multiplies<uint64_t>()); break;
-					// div rA, rD
-					case 0x22: ce_op(rA, rD, std::divides<int64_t>()); break;
-					// divu rA, rD
-					case 0x23: ce_op(rA, rD, std::divides<uint64_t>()); break;
+					// mul rA, rB
+					case 0x20: ce_op(rA, rB, std::multiplies<int64_t>()); break;
+					// mulu rA, rB
+					case 0x21: ce_op(rA, rB, std::multiplies<uint64_t>()); break;
+					// div rA, rB
+					case 0x22: ce_op(rA, rB, std::divides<int64_t>()); break;
+					// divu rA, rB
+					case 0x23: ce_op(rA, rB, std::divides<uint64_t>()); break;
 
 					// mfce{hl} rD[, rA]
 					case 0x24:
