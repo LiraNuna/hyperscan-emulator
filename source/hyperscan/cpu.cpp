@@ -77,7 +77,7 @@ void CPU::interrupt(uint8_t cause) {
 }
 
 void CPU::branch(uint8_t condition, uint32_t address, bool link) {
-	if (conditional(condition)) {
+	if (conditional(condition, true)) {
 		jump(address, link);
 	}
 }
@@ -537,7 +537,7 @@ void CPU::exec16(const Instruction16 &insn) {
 	}
 }
 
-bool CPU::conditional(uint8_t pattern) const {
+bool CPU::conditional(uint8_t pattern, bool cnt) {
 	switch(pattern) {
 		case 0x0: return  C;
 		case 0x1: return !C;
@@ -553,7 +553,7 @@ bool CPU::conditional(uint8_t pattern) const {
 		case 0xB: return !N;
 		case 0xC: return  V;
 		case 0xD: return !V;
-		case 0xE: return false; // CNT > 0;
+		case 0xE: return (CNT -= cnt) > 0;
 		case 0xF: return true;
 	}
 

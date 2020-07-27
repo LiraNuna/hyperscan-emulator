@@ -190,7 +190,7 @@ class CPU {
 
 		void branch(uint8_t condition, uint32_t address, bool link);
 
-		bool conditional(uint8_t pattern) const;
+		bool conditional(uint8_t pattern, bool cnt=false);
 
 		void basic_flags(uint32_t res);
 
