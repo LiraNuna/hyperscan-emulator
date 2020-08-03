@@ -182,13 +182,15 @@ class CPU {
 		void interrupt(uint8_t cause);
 
 	protected:
-		void exec16(const Instruction16 &insn);
+		uint32_t exec16(const Instruction16 &insn);
 
-		void exec32(const Instruction32 &insn);
+		uint32_t exec32(const Instruction32 &insn);
 
-		void jump(uint32_t address, bool link);
+		template <int I>
+		uint32_t jump(uint32_t address, bool link);
 
-		void branch(uint8_t condition, uint32_t address, bool link);
+		template <int I>
+		uint32_t branch(uint8_t condition, uint32_t address, bool link);
 
 		bool conditional(uint8_t pattern, bool cnt=false);
 
