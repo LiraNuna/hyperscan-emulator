@@ -559,7 +559,7 @@ bool CPU::conditional(uint8_t pattern, bool cnt) {
 		case 0xB: return !N;
 		case 0xC: return  V;
 		case 0xD: return !V;
-		case 0xE: return (CNT -= cnt) > 0;
+		case 0xE: return CNT && (CNT -= cnt) > 0;
 		case 0xF: return true;
 	}
 
