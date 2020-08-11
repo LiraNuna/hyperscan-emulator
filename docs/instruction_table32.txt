@@ -4,8 +4,8 @@ OP     rD    rA    rB        func   C
 00000  00000 00000 00000 000 000000 0
 =======================================
 
-insn         | func   | C |
--------------+--------+---+
+insn         | func   | C | Notes
+-------------+--------+---+--------------------------------------------------------------------------
 nop          | 000000 | 0 |
 syscall      | 000001 | 0 |
 trap{cond}   | 000010 | 0 |
@@ -13,40 +13,41 @@ sdbbp        | 000011 | 0 |
 br{cond}     | 000100 | 0 |
 br{cond}l    | 000100 | 1 |
 pflush       | 000101 | 0 |
-               000110       // MISSING
-               000111       // MISSING
+alw          | 000110 | 0 | Missing from doc, binutils shows it to be 000110
+asw          | 000111 | 0 | Missing from doc, binutils shows it to be 000111
 add[.c]      | 001000 |   |
-addc[.c]     | 001001 |   | // Error in doc, binutils shows it to be 001001
+addc[.c]     | 001001 |   | Error in doc, binutils shows it to be 001001
 sub[.c]      | 001010 |   |
 subc[.c]     | 001011 |   |
 cmp{tcs}.c   | 001100 | 1 |
 cmpz{tcs}.c  | 001101 | 1 |
-               001110       // MISSING
+             | 001110 |   | ILLEGAL
 neg[.c]      | 001111 |   |
 and[.c]      | 010000 |   |
 or[.c]       | 010001 |   |
 not[.c]      | 010010 |   |
 xor[.c]      | 010011 |   |
-bitclr[.c]   | 010100       // Missing from doc, binutils shows it to be 010100
-bitset[.c]   | 010101 |   | // Missing from doc, binutils shows it to be 010101
-bittst.c     | 010110 | 1 | // Missing from doc, binutils shows it to be 010110
-bittgl[.c]   | 010111 |   | // Missing from doc, binutils shows it to be 010111
+bitclr[.c]   | 010100 |   | Missing from doc, binutils shows it to be 010100
+bitset[.c]   | 010101 |   | Missing from doc, binutils shows it to be 010101
+bittst.c     | 010110 | 1 | Missing from doc, binutils shows it to be 010110
+bittgl[.c]   | 010111 |   | Missing from doc, binutils shows it to be 010111
 sll[.c]      | 011000 |   |
-               011001       // MISSING
+             | 011001 |   | ILLEGAL
 srl[.c]      | 011010 |   |
 sra[.c]      | 011011 |   |
 ror[.c]      | 011100 |   |
-rorc[.c]     | 011101 | 1 |
+rorc.c       | 011101 | 1 |
 rol[.c]      | 011110 |   |
-               011111       // MISSING
+rolc.c       | 011111 | 1 | Missing from doc, binutils shows it to be 011111
 mul          | 100000 | 0 |
+mul.f        | 100000 | 1 |
 mulu         | 100001 | 0 |
 div          | 100010 | 0 |
 divu         | 100011 | 0 |
 mfce{hl}     | 100100 | 0 |
 mtce{hl}     | 100101 | 0 |
-               100110       // MISSING
-               100111       // MISSING
+             | 100110 |   | ILLEGAL
+             | 100111 |   | ILLEGAL
 mfsr         | 101000 | 0 |
 mtsr         | 101001 | 0 |
 t{cond}      | 101010 | 0 |
@@ -57,14 +58,14 @@ extzb[.c]    | 101110 |   |
 extzh[.c]    | 101111 |   |
 lcb          | 110000 | 0 |
 lcw          | 110001 | 0 |
-               110010       // MISSING
+             | 110010 |   | ILLEGAL
 lce          | 110011 | 0 |
 scb          | 110100 | 0 |
 scw          | 110101 | 0 |
-               110110       // MISSING
+             | 110110 |   | ILLEGAL
 sce          | 110111 | 0 |
 slli[.c]     | 111000 |   |
-               111001       // MISSING
+             | 111001 |   | ILLEGAL
 srli[.c]     | 111010 |   |
 srai[.c]     | 111011 |   |
 rori[.c]     | 111100 |   |
