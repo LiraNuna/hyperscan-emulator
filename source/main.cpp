@@ -23,7 +23,7 @@ memory::ArrayMemoryRegion<24 >* createFileMemoryRegion(const char* fileName) {
 	size_t fileSize = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
-	if(fread(result->memory.begin(), 1, fileSize, f) != fileSize)
+	if(fread(result->memory.data(), 1, fileSize, f) != fileSize)
 		fprintf(stderr, "WARNING: Bad firmware\n");
 
 	fclose(f);
