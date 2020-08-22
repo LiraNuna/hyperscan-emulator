@@ -17,16 +17,7 @@ CPU::CPU() {
 }
 
 void CPU::reset() {
-	reset_flags();
 	reset_registers();
-}
-
-void CPU::reset_flags() {
-	N = 0;
-	Z = 0;
-	C = 0;
-	V = 0;
-	T = 0;
 }
 
 void CPU::reset_registers() {

@@ -268,6 +268,15 @@ class CPU {
 				uint32_t cr28, cr29, cr30, cr31;
 			};
 
+			struct {
+				uint32_t            : 32;
+				bool V              : 1;
+				bool C              : 1;
+				bool Z              : 1;
+				bool N              : 1;
+				bool T              : 1;
+			};
+
 			uint32_t cr[32];
 		};
 
@@ -283,9 +292,6 @@ class CPU {
 
 			uint32_t sr[3];
 		};
-
-		// Flags
-		bool N, Z, C, V, T;
 
 		// Custom Engine Registers
 		uint32_t CEH, CEL;
