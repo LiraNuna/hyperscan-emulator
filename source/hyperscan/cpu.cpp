@@ -116,7 +116,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					case 0x0B: rD = subc(rA, rB, insn.spform.CU); break;
 					// cmp{tcs}.c rA, rB
 					case 0x0C:      cmp(rA, rB, insn.spform.rD & 0x03, insn.spform.CU); break;
-					// cmpz{tcs}.c rA, rB
+					// cmpz{tcs}.c rA
 					case 0x0D:      cmp(rA, 0, insn.spform.rD & 0x03, insn.spform.CU); break;
 
 					// neg[.c] rD, rA
@@ -125,7 +125,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					case 0x10: rD = bit_and(rA, rB, insn.spform.CU); break;
 					// or[.c] rD, rA, rB
 					case 0x11: rD = bit_or(rA, rB, insn.spform.CU); break;
-					// not[.c] rD, rA, rB
+					// not[.c] rD, rA
 					case 0x12: rD = bit_xor(rA, ~0, insn.spform.CU); break;
 					// xor[.c] rD, rA, rB
 					case 0x13: rD = bit_xor(rA, rB, insn.spform.CU); break;
@@ -497,7 +497,7 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 				// b{cond}! imm8
 				return branch<16>(insn.bxform.EC, pc + (sign_extend(insn.bxform.Imm8, 8) << 1), false);
 		case 0x05:
-				// ldiu! imm8
+				// ldiu! rD, imm8
 				g0[insn.iform2.rD] = insn.iform2.Imm8;
 			break;
 		case 0x06: {
