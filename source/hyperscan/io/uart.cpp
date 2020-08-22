@@ -9,19 +9,19 @@ UART::UART() {
 
 }
 
-uint8_t UART::readU8(uint32_t address) {
+uint8_t UART::readU8(uint32_t address) const {
 	// TODO: 8bit read
 
 	return ArrayMemoryRegion::readU8(address);
 }
 
-uint16_t UART::readU16(uint32_t address) {
+uint16_t UART::readU16(uint32_t address) const {
 	// TODO: 16bit read
 
 	return ArrayMemoryRegion::readU16(address);
 }
 
-uint32_t UART::readU32(uint32_t address) {
+uint32_t UART::readU32(uint32_t address) const {
 	switch(address) {
 		// TX/RX
 		case 0x0000:
@@ -38,7 +38,7 @@ uint32_t UART::readU32(uint32_t address) {
 			return 0x00000000;
 		// Status
 		case 0x0010:
-			return 0x00000000;
+			return 0x00000090;
 	}
 
 	// XXX: Is that what really happens?

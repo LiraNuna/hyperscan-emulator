@@ -14,17 +14,17 @@ class UART : public memory::ArrayMemoryRegion<IOMemoryRegion::DATA_BITS > {
 	public:
 		UART();
 
-		virtual uint8_t readU8(uint32_t address);
+		uint8_t readU8(uint32_t address) const override;
 
-		virtual uint16_t readU16(uint32_t address);
+		uint16_t readU16(uint32_t address) const override;
 
-		virtual uint32_t readU32(uint32_t address);
+		uint32_t readU32(uint32_t address) const override;
 
-		virtual void writeU8(uint32_t address, uint8_t value);
+		void writeU8(uint32_t address, uint8_t value) override;
 
-		virtual void writeU16(uint32_t address, uint16_t value);
+		void writeU16(uint32_t address, uint16_t value) override;
 
-		virtual void writeU32(uint32_t address, uint32_t value);
+		void writeU32(uint32_t address, uint32_t value) override;
 };
 
 }
