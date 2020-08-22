@@ -10,8 +10,8 @@ using namespace hyperscan;
 /**
  * TODO: make better
  */
-memory::ArrayMemoryRegion<24 >* createFileMemoryRegion(const char* fileName) {
-	memory::ArrayMemoryRegion<24 >* result = new memory::ArrayMemoryRegion<24 >();
+memory::ArrayMemoryRegion<24 >* createFileMemoryRegion(const char* fileName, uint32_t offset = 0) {
+	auto result = new memory::ArrayMemoryRegion<24 >();
 
 	FILE* f = fopen(fileName, "rb");
 	if(!f) {
@@ -23,7 +23,7 @@ memory::ArrayMemoryRegion<24 >* createFileMemoryRegion(const char* fileName) {
 	size_t fileSize = ftell(f);
 	fseek(f, 0, SEEK_SET);
 
-	if(fread(result->memory.data(), 1, fileSize, f) != fileSize)
+	if(fread(result->memory.data() + offset, 1, fileSize, f) != fileSize)
 		fprintf(stderr, "WARNING: Bad firmware\n");
 
 	fclose(f);
