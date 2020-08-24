@@ -31,22 +31,26 @@ void CPU::reset_registers() {
 	pc = 0;
 }
 
-void CPU::step() {
-	uint32_t instruction = miu.readU16(pc);
-
-	// Pre-decode the instruction
-	if(instruction & 0x8000) {
-		// Remove p0 and p1 bits before handling the instruction as 30bit
-		instruction &= 0x00007FFF;
-		instruction |= miu.readU16(pc + 2) << 15;
-		instruction &= 0x3FFFFFFF;
-
-		pc += exec32(instruction);
-	} else {
-		// p0 bit is not present and there is no next instruction
-		// TODO: if p1 bit is in next 16bit instruction, parallel execution mode
-		pc += exec16(instruction);
+uint32_t CPU::step() {
+	// We can only run a 16bit instruction when PC is non-word aligned
+	if (pc & 2) {
+		return pc += exec16(miu.readU16(pc));
 	}
+
+	// Decode into a 32bit instruction or sequential/parallel 16bit instructions
+	InstructionDecoder instruction = miu.readU32(pc);
+
+	// XXX: (p0 & p1) vs p0?
+	if (instruction.p0) {
+		return pc += exec32((instruction.high << 15) | instruction.low);
+	}
+
+	Instruction16 insn16 = instruction.low;
+	if (instruction.p1) {
+		insn16 = T ? instruction.low : instruction.high;
+	}
+
+	return pc += exec16(insn16) + (instruction.p1 * 2);
 }
 
 void CPU::interrupt(uint8_t cause) {

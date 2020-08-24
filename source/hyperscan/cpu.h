@@ -11,10 +11,7 @@ namespace hyperscan {
 class CPU {
 	public:
 		union Instruction32 {
-			Instruction32(uint32_t encoded):
-				encoded(encoded) {
-
-			}
+			Instruction32(uint32_t encoded): encoded(encoded) {}
 
 			// OP = 0x02
 			struct jform {
@@ -153,6 +150,19 @@ class CPU {
 			uint16_t encoded;
 		};
 
+		union InstructionDecoder {
+			InstructionDecoder(uint32_t encoded): encoded(encoded) {}
+
+			struct {
+				uint16_t low        : 15;
+				bool p0             :  1;
+				uint16_t high       : 15;
+				bool p1             :  1;
+			};
+
+			uint32_t encoded;
+		};
+
 		CPU();
 
 		/**
@@ -173,8 +183,10 @@ class CPU {
 		/**
 		 * Runs a single instruction from PC
 		 * Advances PC and updates flags according to instruction
+		 *
+		 * Returns the new PC
 		 */
-		void step();
+		uint32_t step();
 
 		/**
 		 * Causes an interrupt to fire
