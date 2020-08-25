@@ -32,13 +32,13 @@ void CPU::reset_registers() {
 }
 
 uint32_t CPU::step() {
-	// We can only run a 16bit instruction when PC is non-word aligned
-	if (pc & 2) {
-		return pc += exec16(miu.readU16(pc));
-	}
-
 	// Decode into a 32bit instruction or sequential/parallel 16bit instructions
 	InstructionDecoder instruction = miu.readU32(pc);
+
+	// We can only run a 16bit instruction when PC is non-word aligned
+	if (pc & 2) {
+		return pc += exec16<16>(instruction.low);
+	}
 
 	// XXX: (p0 & p1) vs p0?
 	if (instruction.p0) {
@@ -47,10 +47,10 @@ uint32_t CPU::step() {
 
 	Instruction16 insn16 = instruction.low;
 	if (instruction.p1) {
-		insn16 = T ? instruction.low : instruction.high;
+		return pc += exec16<32>(T ? instruction.low : instruction.high);
 	}
 
-	return pc += exec16(insn16) + (instruction.p1 * 2);
+	return pc += exec16<16>(insn16);
 }
 
 void CPU::interrupt(uint8_t cause) {
@@ -400,6 +400,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 	return 32 / 8;
 }
 
+template <int I>
 uint32_t CPU::exec16(const Instruction16 &insn) {
 	switch(insn.OP) {
 		case 0x00:
@@ -413,11 +414,11 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 					// mv! rDg0, rAg0
 					case 0x03: g0[insn.rform.rD] = g0[insn.rform.rA]; break;
 					// br{cond}! rAg0
-					case 0x04: return branch<16>(insn.rform.rD, g0[insn.rform.rA], false); break;
+					case 0x04: return branch<I>(insn.rform.rD, g0[insn.rform.rA], false); break;
 					// t{cond}!
 					case 0x05: T = conditional(insn.rform.rD); break;
 					// br{cond}l! rAg0
-					case 0x0C: return branch<16>(insn.rform.rD, g0[insn.rform.rA], true); break;
+					case 0x0C: return branch<I>(insn.rform.rD, g0[insn.rform.rA], true); break;
 
 					default: debugDump();
 				}
@@ -486,11 +487,11 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 			} break;
 		case 0x03:
 				// j[l]! imm11
-				return jump<16>(((pc & 0xFFFFF000) | (insn.jform.Disp11 << 1)), insn.jform.LK);
+				return jump<I>(((pc & 0xFFFFF000) | (insn.jform.Disp11 << 1)), insn.jform.LK);
 			break;
 		case 0x04:
 				// b{cond}! imm8
-				return branch<16>(insn.bxform.EC, pc + (sign_extend(insn.bxform.Imm8, 8) << 1), false);
+				return branch<I>(insn.bxform.EC, pc + (sign_extend(insn.bxform.Imm8, 8) << 1), false);
 		case 0x05:
 				// ldiu! rD, imm8
 				g0[insn.iform2.rD] = insn.iform2.Imm8;
@@ -535,7 +536,7 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 		default: debugDump();
 	}
 
-	return 16 / 8;
+	return I / 8;
 }
 
 bool CPU::conditional(uint8_t pattern, bool cnt) {

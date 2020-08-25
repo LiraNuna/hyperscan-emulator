@@ -194,6 +194,7 @@ class CPU {
 		void interrupt(uint8_t cause);
 
 	protected:
+		template <int I>
 		uint32_t exec16(const Instruction16 &insn);
 
 		uint32_t exec32(const Instruction32 &insn);
