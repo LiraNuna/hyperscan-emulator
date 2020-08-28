@@ -303,7 +303,7 @@ class CPU {
 				uint32_t CNT, LCR, SCR;
 			};
 
-			uint32_t sr[3];
+			uint32_t sr[32];
 		};
 
 		// Custom Engine Registers

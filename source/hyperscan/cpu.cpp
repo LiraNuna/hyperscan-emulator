@@ -23,7 +23,7 @@ void CPU::reset() {
 void CPU::reset_registers() {
 	std::fill(r, r + 32, 0);
 	std::fill(cr, cr + 32, 0);
-	std::fill(sr, sr + 3, 0);
+	std::fill(sr, sr + 32, 0);
 
 	CEH = 0;
 	CEL = 0;
@@ -167,7 +167,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 
 					// mfsr rD srB
 					case 0x28: rD = sr[insn.spform.rB]; break;
-					// mtsr rA, Srn
+					// mtsr rA, srB
 					case 0x29: sr[insn.spform.rB] = rA; break;
 					// t{cond}
 					case 0x2A: T = conditional(insn.spform.rB); break;
