@@ -165,8 +165,8 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 							}
 						break;
 
-					// mfsr rA, Srn
-					case 0x28: rA = sr[insn.spform.rB]; break;
+					// mfsr rD srB
+					case 0x28: rD = sr[insn.spform.rB]; break;
 					// mtsr rA, Srn
 					case 0x29: sr[insn.spform.rB] = rA; break;
 					// t{cond}
