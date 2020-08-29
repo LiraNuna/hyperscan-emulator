@@ -3,6 +3,7 @@
 
 #include "hyperscan/cpu.h"
 #include "hyperscan/io/io.h"
+#include "hyperscan/debugger.h"
 #include "hyperscan/memory/arraymemoryregion.h"
 
 using namespace hyperscan;
@@ -60,8 +61,9 @@ int main() {
 //	// ISO "entry point"
 //	cpu.pc = 0xA0091000;
 
-	while(1)
+	debugger_enable();
+	while (1) {
+		debugger_loop(cpu);
 		cpu.step();
-
-	return 0;
+	}
 }
