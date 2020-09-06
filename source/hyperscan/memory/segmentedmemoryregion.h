@@ -27,26 +27,8 @@ class SegmentedMemoryRegion : public MemoryRegion<segment_bit_size + segment_dat
 		}
 
 		[[nodiscard]]
-		virtual uint8_t readU8(uint32_t address) const {
-			return segments[address >> segment_data_bit_size]->readU8(address & SEGMENT_ACCESS_MASK);
-		}
-
-		[[nodiscard]]
-		virtual uint16_t readU16(uint32_t address) const {
-			return segments[address >> segment_data_bit_size]->readU16(address & SEGMENT_ACCESS_MASK);
-		}
-
-		[[nodiscard]]
 		virtual uint32_t readU32(uint32_t address) const {
 			return segments[address >> segment_data_bit_size]->readU32(address & SEGMENT_ACCESS_MASK);
-		}
-
-		virtual void writeU8(uint32_t address, uint8_t value) {
-			segments[address >> segment_data_bit_size]->writeU8(address & SEGMENT_ACCESS_MASK, value);
-		}
-
-		virtual void writeU16(uint32_t address, uint16_t value) {
-			segments[address >> segment_data_bit_size]->writeU16(address & SEGMENT_ACCESS_MASK, value);
 		}
 
 		virtual void writeU32(uint32_t address, uint32_t value) {

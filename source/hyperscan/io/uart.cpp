@@ -2,23 +2,10 @@
 
 namespace hyperscan::io {
 
-uint8_t UART::readU8(uint32_t address) const {
-	// TODO: 8bit read
-
-	return ArrayMemoryRegion::readU8(address);
-}
-
-uint16_t UART::readU16(uint32_t address) const {
-	// TODO: 16bit read
-
-	return ArrayMemoryRegion::readU16(address);
-}
-
 uint32_t UART::readU32(uint32_t address) const {
 	switch(address) {
-		// TX/RX
+		// RX
 		case 0x0000:
-			// When reading, acts as RX
 			return 0x00000000;
 		// Error register
 		case 0x0004:
@@ -38,23 +25,10 @@ uint32_t UART::readU32(uint32_t address) const {
 	return ArrayMemoryRegion::readU32(address);
 }
 
-void UART::writeU8(uint32_t address, uint8_t value) {
-	// TODO: 8bit write
-
-	ArrayMemoryRegion::writeU8(address, value);
-}
-
-void UART::writeU16(uint32_t address, uint16_t value) {
-	// TODO: 16bit write
-
-	ArrayMemoryRegion::writeU16(address, value);
-}
-
 void UART::writeU32(uint32_t address, uint32_t value) {
 	switch(address) {
-		// TX/RX
+		// TX
 		case 0x0000:
-			// When writing, acts as TX
 			printf("%c", value & 0xFF);
 			fflush(stdout);
 			return;
