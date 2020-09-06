@@ -1,13 +1,6 @@
-#include "io.h"
-#include "uart.h"
+#include "hyperscan/io/uart.h"
 
-namespace hyperscan {
-
-namespace io {
-
-UART::UART() {
-
-}
+namespace hyperscan::io {
 
 uint8_t UART::readU8(uint32_t address) const {
 	// TODO: 8bit read
@@ -81,8 +74,6 @@ void UART::writeU32(uint32_t address, uint32_t value) {
 
 	// XXX: May not be needed
 	ArrayMemoryRegion::writeU32(address, value);
-}
-
 }
 
 }

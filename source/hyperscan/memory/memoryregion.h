@@ -1,11 +1,9 @@
+#include <cstdint>
+
 #ifndef __HYPERSCAN_MEMORY_MEMORYREGION_H__
 #define __HYPERSCAN_MEMORY_MEMORYREGION_H__
 
-#include <stdint.h>
-
-namespace hyperscan {
-
-namespace memory {
+namespace hyperscan::memory {
 
 /**
  * Defines a memory region inside the MIU
@@ -13,26 +11,24 @@ namespace memory {
 template <unsigned addressable_bits >
 class MemoryRegion {
 	public:
-		static constexpr unsigned TOTAL_SIZE  = (1 << addressable_bits);
-		static constexpr unsigned ACCESS_MASK = TOTAL_SIZE - 1;
-
-		virtual ~MemoryRegion() {
-
-		}
+		virtual ~MemoryRegion() = default;
 
 		/**
 		 * Read an unsigned byte
 		 */
+		[[nodiscard]]
 		virtual uint8_t readU8(uint32_t address) const = 0;
 
 		/**
 		 * Read an unsigned half-word
 		 */
+		[[nodiscard]]
 		virtual uint16_t readU16(uint32_t address) const = 0;
 
 		/**
 		 * Read an unsigned word
 		 */
+		[[nodiscard]]
 		virtual uint32_t readU32(uint32_t address) const = 0;
 
 		/**
@@ -50,8 +46,6 @@ class MemoryRegion {
 		 */
 		virtual void writeU32(uint32_t address, uint32_t value) = 0;
 };
-
-}
 
 }
 

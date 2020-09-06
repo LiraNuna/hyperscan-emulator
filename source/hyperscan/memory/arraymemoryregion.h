@@ -1,13 +1,11 @@
 #include <array>
 
-#include "memoryregion.h"
+#include "hyperscan/memory/memoryregion.h"
 
 #ifndef __HYPERSCAN_MEMORY_ARRAYMEMORYREGION_H__
 #define __HYPERSCAN_MEMORY_ARRAYMEMORYREGION_H__
 
-namespace hyperscan {
-
-namespace memory {
+namespace hyperscan::memory {
 
 /**
  * Memory region from an array
@@ -16,30 +14,19 @@ template <unsigned addressable_bits >
 class ArrayMemoryRegion: public MemoryRegion<addressable_bits > {
 	public:
 		static constexpr unsigned TOTAL_SIZE  = (1 << addressable_bits);
-		static constexpr unsigned ACCESS_MASK = TOTAL_SIZE - 1;
 
-		ArrayMemoryRegion() {
-
-		}
-
-		ArrayMemoryRegion(const std::array<uint8_t, TOTAL_SIZE > &data):
-			memory(data) {
-
-		}
-
-		virtual ~ArrayMemoryRegion() {
-
-		}
-
+		[[nodiscard]]
 		virtual uint8_t readU8(uint32_t address) const {
 			return memory[address];
 		}
 
+		[[nodiscard]]
 		virtual uint16_t readU16(uint32_t address) const {
 			return memory[address + 0] << 0 |
 				   memory[address + 1] << 8;
 		}
 
+		[[nodiscard]]
 		virtual uint32_t readU32(uint32_t address) const {
 			return memory[address + 0] <<  0 |
 				   memory[address + 1] <<  8 |
@@ -65,8 +52,6 @@ class ArrayMemoryRegion: public MemoryRegion<addressable_bits > {
 
 		std::array<uint8_t, TOTAL_SIZE > memory;
 };
-
-}
 
 }
 

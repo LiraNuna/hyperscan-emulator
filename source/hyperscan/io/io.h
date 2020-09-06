@@ -1,18 +1,14 @@
+#include "hyperscan/memory/segmentedmemoryregion.h"
+
 #ifndef __HYPERSCAN_IO_IOMEMORYREGION_H__
 #define __HYPERSCAN_IO_IOMEMORYREGION_H__
 
-#include "hyperscan/memory/segmentedmemoryregion.h"
+namespace hyperscan::io {
 
-namespace hyperscan {
-
-namespace io {
-
-class IOMemoryRegion : public memory::SegmentedMemoryRegion<8, 16 > {
+class IOMemoryRegion : public memory::SegmentedMemoryRegion<8, 16> {
 	public:
 		IOMemoryRegion();
 };
-
-}
 
 }
 
