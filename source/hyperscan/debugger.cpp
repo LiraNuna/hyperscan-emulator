@@ -42,6 +42,10 @@ const std::map<const std::string, std::function<void(std::vector<std::string>, C
 			}
 		}},
 		{"b",  [](auto arguments, auto cpu) {
+		    if (arguments.empty()) {
+		        return debugger_breakpoint_toggle(cpu->pc, false);
+		    }
+
 			for (const auto& arg : arguments) {
 				debugger_breakpoint_toggle(parse_address(arg, cpu), false);
 			}
