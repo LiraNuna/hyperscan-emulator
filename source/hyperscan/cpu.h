@@ -218,10 +218,6 @@ class CPU {
 
 		uint32_t addc(uint32_t a, uint32_t b, bool flags);
 
-		uint32_t sub(uint32_t a, uint32_t b, bool flags);
-
-		uint32_t subc(uint32_t a, uint32_t b, bool flags);
-
         template <typename Op >
         uint32_t bit_op(uint32_t a, uint32_t b, bool flags, Op op);
 

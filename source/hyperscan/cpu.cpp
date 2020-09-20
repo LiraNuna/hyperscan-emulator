@@ -106,16 +106,16 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// addc[.c] rD, rA, rB
 					case 0x09: rD = addc(rA, rB, insn.spform.CU); break;
 					// sub[.c] rD, rA, rB
-					case 0x0A: rD = sub(rA, rB, insn.spform.CU); break;
+					case 0x0A: rD = add(rA, -rB, insn.spform.CU); break;
 					// subc[.c] rD, rA, rB
-					case 0x0B: rD = subc(rA, rB, insn.spform.CU); break;
+					case 0x0B: rD = addc(rA, -rB, insn.spform.CU); break;
 					// cmp{tcs}.c rA, rB
 					case 0x0C:      cmp(rA, rB, insn.spform.rD & 0x03, insn.spform.CU); break;
 					// cmpz{tcs}.c rA
 					case 0x0D:      cmp(rA, 0, insn.spform.rD & 0x03, insn.spform.CU); break;
 
 					// neg[.c] rD, rA
-					case 0x0F: rD = sub(0, rA, insn.spform.CU); break;
+					case 0x0F: rD = add(0, -rA, insn.spform.CU); break;
 					// and[.c] rD, rA, rB
 					case 0x10: rD = bit_op(rA, rB, insn.spform.CU, std::bit_and()); break;
 					// or[.c] rD, rA, rB
@@ -454,11 +454,11 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 					// add! rDg0, rAg0
 					case 0x00: rD = add(rD, rA, true); break;
 					// sub! rDg0, rAg0
-					case 0x01: rD = sub(rD, rA, true); break;
+					case 0x01: rD = add(rD, -rA, true); break;
 					// neg! rDg0, rAg0
-					case 0x02: rD = sub(0, rA, true); break;
+					case 0x02: rD = add(0, -rA, true); break;
 					// cmp! rDg0, rAg0
-					case 0x03: sub(rD, rA, true); break;
+					case 0x03:      add(rD, -rA, true); break;
 					// and! rDg0, rAg0
 					case 0x04: rD = bit_op(rD, rA, true, std::bit_and()); break;
 					// or! rDg0, rAg0
@@ -571,7 +571,7 @@ void CPU::cmp(uint32_t a, uint32_t b, int tcs, bool flags) {
 	if(!flags)
 		return;
 
-	sub(a, b, true);
+	add(a, -b, true);
 	switch(tcs) {
 		case 0x00: T = Z; break;
 		case 0x01: T = N; break;
@@ -599,21 +599,6 @@ uint32_t CPU::add(uint32_t a, uint32_t b, bool flags) {
 
 uint32_t CPU::addc(uint32_t a, uint32_t b, bool flags) {
 	return add(add(a, b, false), C, flags);
-}
-
-uint32_t CPU::sub(uint32_t a, uint32_t b, bool flags) {
-	uint32_t res = a - b;
-	if(flags) {
-		basic_flags(res);
-		C = (a >= b);
-	    V = ((a ^ b) & ~(res ^ b)) >> 31;
-	}
-
-	return res;
-}
-
-uint32_t CPU::subc(uint32_t a, uint32_t b, bool flags) {
-	return sub(sub(a, b, false), !C, flags);
 }
 
 template <typename Op >
