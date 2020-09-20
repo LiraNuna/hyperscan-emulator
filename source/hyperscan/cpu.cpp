@@ -117,21 +117,21 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// neg[.c] rD, rA
 					case 0x0F: rD = sub(0, rA, insn.spform.CU); break;
 					// and[.c] rD, rA, rB
-					case 0x10: rD = bit_and(rA, rB, insn.spform.CU); break;
+					case 0x10: rD = bit_op(rA, rB, insn.spform.CU, std::bit_and()); break;
 					// or[.c] rD, rA, rB
-					case 0x11: rD = bit_or(rA, rB, insn.spform.CU); break;
+					case 0x11: rD = bit_op(rA, rB, insn.spform.CU, std::bit_or()); break;
 					// not[.c] rD, rA
-					case 0x12: rD = bit_xor(rA, ~0, insn.spform.CU); break;
+					case 0x12: rD = bit_op(rA, ~0, insn.spform.CU, std::bit_xor()); break;
 					// xor[.c] rD, rA, rB
-					case 0x13: rD = bit_xor(rA, rB, insn.spform.CU); break;
+					case 0x13: rD = bit_op(rA, rB, insn.spform.CU, std::bit_xor()); break;
 					// bitclr[.c] rD, rA, imm5
-					case 0x14: rD = bit_and(rA, ~(1 << insn.spform.rB), insn.spform.CU); break;
+					case 0x14: rD = bit_op(rA, ~(1 << insn.spform.rB), insn.spform.CU, std::bit_and()); break;
 					// bitset[.c] rD, rA, imm5
-					case 0x15: rD = bit_or(rA, 1 << insn.spform.rB, insn.spform.CU); break;
+					case 0x15: rD = bit_op(rA, 1 << insn.spform.rB, insn.spform.CU, std::bit_or()); break;
 					// bittst.c rA, imm5
-					case 0x16: bit_and(rA, 1 << insn.spform.rB, insn.spform.CU); break;
+					case 0x16:      bit_op(rA, 1 << insn.spform.rB, insn.spform.CU, std::bit_and()); break;
 					// bittgl[.c] rA, imm5
-					case 0x17: rD = bit_xor(rA, 1 << insn.spform.rB, insn.spform.CU); break;
+					case 0x17: rD = bit_op(rA, 1 << insn.spform.rB, insn.spform.CU, std::bit_xor()); break;
 					// sll[.c] rA, imm5
 					case 0x18: rD = sll(rA, insn.spform.rB, insn.spform.CU); break;
 					// srl[.c] rA, imm5
@@ -178,9 +178,9 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// extsh[.c] rD, rA
 					case 0x2D: rD = sign_extend(rA, 16); if(insn.spform.CU) basic_flags(rD); break;
 					// extzb[.c] rD, rA
-					case 0x2E: rD = bit_and(rA, 0x000000FF, insn.spform.CU); break;
+					case 0x2E: rD = bit_op(rA, 0x000000FF, insn.spform.CU, std::bit_and()); break;
 					// extzh[.c] rD, rA
-					case 0x2F: rD = bit_and(rA, 0x0000FFFF, insn.spform.CU); break;
+					case 0x2F: rD = bit_op(rA, 0x0000FFFF, insn.spform.CU, std::bit_and()); break;
 
 					// slli[.c] rD, rA, imm5
 					case 0x38: rD = sll(rA, insn.spform.rB, insn.spform.CU); break;
@@ -201,9 +201,9 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// cmpi.c rD, imm16
 					case 0x02:      cmp(rD, sign_extend(insn.iform.Imm16, 16), 3, insn.iform.CU); break;
 					// andi.c rD, imm16
-					case 0x04: rD = bit_and(rD, insn.iform.Imm16, insn.iform.CU); break;
+					case 0x04: rD = bit_op(rD, insn.iform.Imm16, insn.iform.CU, std::bit_and()); break;
 					// ori.c rD, imm16
-					case 0x05: rD = bit_or(rD, insn.iform.Imm16, insn.iform.CU); break;
+					case 0x05: rD = bit_op(rD, insn.iform.Imm16, insn.iform.CU, std::bit_or()); break;
 					// ldi rD, imm16
 					case 0x06: rD = sign_extend(insn.iform.Imm16, 16); break;
 
@@ -254,9 +254,9 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// cmpis.c rD, imm16
 					case 0x02:      cmp(rD, imm16, 3, insn.iform.CU); break;
 					// andis.c rD, imm16
-					case 0x04: rD = bit_and(rD, imm16, insn.iform.CU); break;
+					case 0x04: rD = bit_op(rD, imm16, insn.iform.CU, std::bit_and()); break;
 					// oris.c rD, imm16
-					case 0x05: rD = bit_or(rD, imm16, insn.iform.CU); break;
+					case 0x05: rD = bit_op(rD, imm16, insn.iform.CU, std::bit_or()); break;
 					// ldis rD, imm16
 					case 0x06: rD = imm16; break;
 
@@ -317,7 +317,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.riform.rA];
 				uint32_t imm14 = insn.riform.Imm14;
 
-				rD = bit_and(rA, imm14, insn.riform.CU);
+				rD = bit_op(rA, imm14, insn.riform.CU, std::bit_and());
 			} break;
 		case 0x0D: {
 				// orri[.c] rD, rA, imm14
@@ -325,7 +325,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.riform.rA];
 				uint32_t imm14 = insn.riform.Imm14;
 
-				rD = bit_or(rA, imm14, insn.riform.CU);
+				rD = bit_op(rA, imm14, insn.riform.CU, std::bit_or());
 			} break;
 		case 0x10: {
 				// lw rD, [rA, imm15]
@@ -460,13 +460,13 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 					// cmp! rDg0, rAg0
 					case 0x03: sub(rD, rA, true); break;
 					// and! rDg0, rAg0
-					case 0x04: rD = bit_and(rD, rA, true); break;
+					case 0x04: rD = bit_op(rD, rA, true, std::bit_and()); break;
 					// or! rDg0, rAg0
-					case 0x05: rD = bit_or(rD, rA, true); break;
+					case 0x05: rD = bit_op(rD, rA, true, std::bit_or()); break;
 					// not! rDg0, rAg0
-					case 0x06: rD = bit_xor(rA, ~0, true); break;
+					case 0x06: rD = bit_op(rA, ~0, true, std::bit_xor()); break;
 					// xor! rDg0, rAg0
-					case 0x07: rD = bit_xor(rD, rA, true); break;
+					case 0x07: rD = bit_op(rD, rA, true, std::bit_xor()); break;
 					// lw! rDg0, [rAg0]
 					case 0x08: rD = miu.readU32(rA); break;
 					// lh! rDg0, [rAg0]
@@ -503,11 +503,11 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 					// srli! rD, imm5
 					case 0x03: rD = srl(rD, insn.iform1.Imm5, true); break;
 					// bitclr! rD, imm5
-					case 0x04: rD = bit_and(rD, ~imm, true); break;
+					case 0x04: rD = bit_op(rD, ~imm, true, std::bit_and()); break;
 					// bitset! rD, imm5
-					case 0x05: rD = bit_or(rD, imm, true); break;
+					case 0x05: rD = bit_op(rD, imm, true, std::bit_or()); break;
 					// bittst! rD, imm5
-					case 0x06: bit_and(rD, imm, true); break;
+					case 0x06:      bit_op(rD, imm, true, std::bit_and()); break;
 
 					default: debugDump();
 				}
@@ -616,28 +616,14 @@ uint32_t CPU::subc(uint32_t a, uint32_t b, bool flags) {
 	return sub(sub(a, b, false), !C, flags);
 }
 
-uint32_t CPU::bit_and(uint32_t a, uint32_t b, bool flags) {
-	uint32_t res = a & b;
-	if(flags)
-		basic_flags(res);
+template <typename Op >
+uint32_t CPU::bit_op(uint32_t a, uint32_t b, bool flags, Op op) {
+    uint32_t res = op(a, b);
+    if(flags) {
+        basic_flags(res);
+    }
 
-	return res;
-}
-
-uint32_t CPU::bit_or(uint32_t a, uint32_t b, bool flags) {
-	uint32_t res = a | b;
-	if(flags)
-		basic_flags(res);
-
-	return res;
-}
-
-uint32_t CPU::bit_xor(uint32_t a, uint32_t b, bool flags) {
-	uint32_t res = a ^ b;
-	if(flags)
-		basic_flags(res);
-
-	return res;
+    return res;
 }
 
 uint32_t CPU::sll(uint32_t a, uint8_t sa, bool flags) {
