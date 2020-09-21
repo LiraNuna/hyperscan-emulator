@@ -192,8 +192,7 @@ void disasm32(const CPU::Instruction32 &insn, uint32_t address) {
 					return ins(
 							opc("not", insn.spform.CU),
 							reg(insn.spform.rD),
-							reg(insn.spform.rA),
-							reg(insn.spform.rB));
+							reg(insn.spform.rA));
 				case 0x13:
 					return ins(
 							opc("xor", insn.spform.CU),
