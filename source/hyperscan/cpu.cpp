@@ -488,7 +488,6 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 		case 0x03:
 				// j[l]! imm11
 				return jump<I>(((pc & 0xFFFFF000) | (insn.jform.Disp11 << 1)), insn.jform.LK);
-			break;
 		case 0x04:
 				// b{cond}! imm8
 				return branch<I>(insn.bxform.EC, pc + (sign_extend(insn.bxform.Imm8, 8) << 1), false);
