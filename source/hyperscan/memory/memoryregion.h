@@ -26,7 +26,7 @@ class MemoryRegion {
 		[[nodiscard]]
 		virtual uint16_t readU16(uint32_t address) const {
 			uint32_t aligned = address & 0xFFFFFFFC;
-			return readU32(aligned) >> (address - aligned) * 16;
+			return readU32(aligned) >> (address - aligned) * 8;
 		}
 
 		/**
@@ -49,8 +49,8 @@ class MemoryRegion {
 		 */
 		virtual void writeU16(uint32_t address, uint16_t value) {
 			uint32_t aligned = address & 0xFFFFFFFC;
-			uint32_t mask = ~(0xFFFF << ((address - aligned) * 16));
-			writeU32(aligned, (readU32(aligned) & mask) | (value << ((address - aligned) * 16)));
+			uint32_t mask = ~(0xFFFF << ((address - aligned) * 8));
+			writeU32(aligned, (readU32(aligned) & mask) | (value << ((address - aligned) * 8)));
 		}
 
 		/**
