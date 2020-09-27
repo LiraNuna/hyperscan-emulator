@@ -61,24 +61,24 @@ const std::map<const std::string, std::function<void(std::vector<std::string>, C
 			cpu->interrupt(std::stol(arguments[0]));
 		}},
 		{"so", [](auto, auto cpu) {
-			CPU::InstructionDecoder instruction = cpu->miu.readU32(cpu->pc - (cpu->pc & 2));
+			CPU::InstructionDecoder instruction = cpu->miu->readU32(cpu->pc - (cpu->pc & 2));
 
 			debugger_breakpoint_add(cpu->pc + (instruction.p0 * 2) + 2, true);
 			debugger_disable();
 		}},
 		{"sb", [](auto arguments, auto cpu) {
-			cpu->miu.writeU8(parse_address(arguments[0], cpu), parse_address(arguments[1], cpu));
+			cpu->miu->writeU8(parse_address(arguments[0], cpu), parse_address(arguments[1], cpu));
 		}},
 		{"sh", [](auto arguments, auto cpu) {
-			cpu->miu.writeU16(parse_address(arguments[0], cpu), parse_address(arguments[1], cpu));
+			cpu->miu->writeU16(parse_address(arguments[0], cpu), parse_address(arguments[1], cpu));
 		}},
 		{"sw", [](auto arguments, auto cpu) {
-			cpu->miu.writeU32(parse_address(arguments[0], cpu), parse_address(arguments[1], cpu));
+			cpu->miu->writeU32(parse_address(arguments[0], cpu), parse_address(arguments[1], cpu));
 		}},
 		{"dump", [](auto arguments, auto cpu) {
 			FILE* memdump = fopen(arguments[0].c_str(), "wb");
 			for(int i=0; i<0x01000000; ++i)
-				fputc(cpu->miu.readU8(0xA0000000 + i), memdump);
+				fputc(cpu->miu->readU8(0xA0000000 + i), memdump);
 			fclose(memdump);
 		}},
 		{"q", [](auto, auto) {
@@ -150,13 +150,13 @@ void draw_memory(int x, int y, int h, const CPU &cpu, uint32_t startAddress) {
 				printf(" ");
 			}
 
-			uint8_t byte = cpu.miu.readU8(startAddress + (i * 16) + ii);
+			uint8_t byte = cpu.miu->readU8(startAddress + (i * 16) + ii);
 			printf("%s%02x\033[39m ", get_byte_color(byte), byte);
 		}
 
 		printf(" ");
 		for (int ii = 0; ii < 16; ++ii) {
-			uint8_t byte = cpu.miu.readU8(startAddress + (i * 16) + ii);
+			uint8_t byte = cpu.miu->readU8(startAddress + (i * 16) + ii);
 			printf("%s%c\033[39m", get_byte_color(byte), (byte > 0x20 && byte < 0x7E) ? byte : '.');
 		}
 	}
@@ -182,14 +182,14 @@ void draw_stack(int x, int y, int h, const CPU &cpu) {
 
 		uint32_t address = cpu.r0 + (i * 4);
 		printf("%s%s%s%08x\033[24;27;39m", address == cpu.r0 ? "▶ \033[7m" : "  ",
-		       address == cpu.r2 ? "\033[4m" : "", get_value_color(cpu.miu.readU32(address)), cpu.miu.readU32(address));
+		       address == cpu.r2 ? "\033[4m" : "", get_value_color(cpu.miu->readU32(address)), cpu.miu->readU32(address));
 	}
 }
 
 void draw_code(int x, int y, int lines, const CPU &cpu, uint32_t address, int lookback = 0) {
 	while (lookback--) {
 		address -= 4;
-		if ((~cpu.miu.readU16(address) & 0x8000) || (address & 2) >> 1) {
+		if ((~cpu.miu->readU16(address) & 0x8000) || (address & 2) >> 1) {
 			address += 2;
 		}
 	}
@@ -197,7 +197,7 @@ void draw_code(int x, int y, int lines, const CPU &cpu, uint32_t address, int lo
 	for (int i = 0; i < lines; ++i) {
 		move(x, y + i);
 
-		CPU::InstructionDecoder instruction = cpu.miu.readU32(address - (address & 2));
+		CPU::InstructionDecoder instruction = cpu.miu->readU32(address - (address & 2));
 
 		if (address == cpu.pc || (address - (address & 2) == cpu.pc && instruction.p1)) {
 			printf("▶ \033[44m");

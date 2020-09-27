@@ -306,7 +306,7 @@ class CPU {
 		uint32_t pc;
 
 		// Memory interfacing unit
-		memory::SegmentedMemoryRegion<8, 24 > miu;
+		std::shared_ptr<memory::SegmentedMemoryRegion<8, 24>> miu;
 };
 
 }

@@ -33,7 +33,7 @@ void CPU::reset_registers() {
 
 uint32_t CPU::step() {
 	// Decode into a 32bit instruction or sequential/parallel 16bit instructions
-	InstructionDecoder instruction = miu.readU32(pc);
+	InstructionDecoder instruction = miu->readU32(pc);
 
 	// We can only run a 16bit instruction when PC is non-word aligned
 	if (pc & 2) {
@@ -221,21 +221,21 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				rA += sign_extend(insn.rixform.Imm12, 12);
 				switch(insn.rixform.func3) {
 					// lw rD, [rA, imm12]+
-					case 0x00: rD = miu.readU32(rA); break;
+					case 0x00: rD = miu->readU32(rA); break;
 					// lh rD, [rA, imm12]+
-					case 0x01: rD = sign_extend(miu.readU16(rA), 16); break;
+					case 0x01: rD = sign_extend(miu->readU16(rA), 16); break;
 					// lhu rD, [rA, imm12]+
-					case 0x02: rD = miu.readU16(rA); break;
+					case 0x02: rD = miu->readU16(rA); break;
 					// lb rD, [rA, imm12]+
-					case 0x03: rD = sign_extend(miu.readU8(rA), 8); break;
+					case 0x03: rD = sign_extend(miu->readU8(rA), 8); break;
 					// sw rD, [rA, imm12]+
-					case 0x04: miu.writeU32(rA, rD); break;
+					case 0x04: miu->writeU32(rA, rD); break;
 					// sh rD, [rA, imm12]+
-					case 0x05: miu.writeU16(rA, rD); break;
+					case 0x05: miu->writeU16(rA, rD); break;
 					// lbu rD, [rA, imm12]+
-					case 0x06: rD = miu.readU8(rA); break;
+					case 0x06: rD = miu->readU8(rA); break;
 					// sb rD, [rA, imm12]+
-					case 0x07: miu.writeU8(rA, rD); break;
+					case 0x07: miu->writeU8(rA, rD); break;
 
 					default: debugDump();
 				}
@@ -282,21 +282,21 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.rixform.rA];
 				switch(insn.rixform.func3) {
 					// lw rD, [rA]+, imm12
-					case 0x00: rD = miu.readU32(rA); break;
+					case 0x00: rD = miu->readU32(rA); break;
 					// lh rD, [rA]+, imm12
-					case 0x01: rD = sign_extend(miu.readU16(rA), 16); break;
+					case 0x01: rD = sign_extend(miu->readU16(rA), 16); break;
 					// lhu rD, [rA]+, imm12
-					case 0x02: rD = miu.readU16(rA); break;
+					case 0x02: rD = miu->readU16(rA); break;
 					// lb rD, [rA]+, imm12
-					case 0x03: rD = sign_extend(miu.readU8(rA), 8); break;
+					case 0x03: rD = sign_extend(miu->readU8(rA), 8); break;
 					// sw rD, [rA]+, imm12
-					case 0x04: miu.writeU32(rA, rD); break;
+					case 0x04: miu->writeU32(rA, rD); break;
 					// sh rD, [rA]+, imm12
-					case 0x05: miu.writeU16(rA, rD); break;
+					case 0x05: miu->writeU16(rA, rD); break;
 					// lbu rD, [rA]+, imm12
-					case 0x06: rD = miu.readU8(rA); break;
+					case 0x06: rD = miu->readU8(rA); break;
 					// sb rD, [rA]+, imm12
-					case 0x07: miu.writeU8(rA, rD); break;
+					case 0x07: miu->writeU8(rA, rD); break;
 
 					default: debugDump();
 				}
@@ -333,7 +333,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				rD = miu.readU32(rA + imm15);
+				rD = miu->readU32(rA + imm15);
 			} break;
 		case 0x11: {
 				// lh rD, [rA, imm15]
@@ -341,7 +341,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				rD = sign_extend(miu.readU16(rA + imm15), 16);
+				rD = sign_extend(miu->readU16(rA + imm15), 16);
 			} break;
 		case 0x12: {
 				// lhu rD, [rA, imm15]
@@ -349,7 +349,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				rD = miu.readU16(rA + imm15);
+				rD = miu->readU16(rA + imm15);
 			} break;
 		case 0x13: {
 				// lb rD, [rA, imm15]
@@ -357,7 +357,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				rD = sign_extend(miu.readU8(rA + imm15), 8);
+				rD = sign_extend(miu->readU8(rA + imm15), 8);
 			} break;
 		case 0x14: {
 				// sw rD, [rA, imm15]
@@ -365,7 +365,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				miu.writeU32(rA + imm15, rD);
+				miu->writeU32(rA + imm15, rD);
 			} break;
 		case 0x15: {
 				// sh rD, [rA, imm15]
@@ -373,7 +373,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				miu.writeU16(rA + imm15, rD);
+				miu->writeU16(rA + imm15, rD);
 			} break;
 		case 0x16: {
 				// lbu rD, [rA, imm15]
@@ -381,7 +381,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				rD = miu.readU8(rA + imm15);
+				rD = miu->readU8(rA + imm15);
 			} break;
 		case 0x17: {
 				// sb rD, [rA, imm15]
@@ -389,7 +389,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 				uint32_t &rA = r[insn.mform.rA];
 				int32_t imm15 = sign_extend(insn.mform.Imm15, 15);
 
-				miu.writeU8(rA + imm15, rD);
+				miu->writeU8(rA + imm15, rD);
 			} break;
 		case 0x18:
 				// cache op, [rA, imm15]
@@ -414,11 +414,11 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 					// mv! rDg0, rAg0
 					case 0x03: g0[insn.rform.rD] = g0[insn.rform.rA]; break;
 					// br{cond}! rAg0
-					case 0x04: return branch<I>(insn.rform.rD, g0[insn.rform.rA], false); break;
+					case 0x04: return branch<I>(insn.rform.rD, g0[insn.rform.rA], false);
 					// t{cond}!
 					case 0x05: T = conditional(insn.rform.rD); break;
 					// br{cond}l! rAg0
-					case 0x0C: return branch<I>(insn.rform.rD, g0[insn.rform.rA], true); break;
+					case 0x0C: return branch<I>(insn.rform.rD, g0[insn.rform.rA], true);
 
 					default: debugDump();
 				}
@@ -468,21 +468,21 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 					// xor! rDg0, rAg0
 					case 0x07: rD = bit_op(rD, rA, true, std::bit_xor()); break;
 					// lw! rDg0, [rAg0]
-					case 0x08: rD = miu.readU32(rA); break;
+					case 0x08: rD = miu->readU32(rA); break;
 					// lh! rDg0, [rAg0]
-					case 0x09: rD = sign_extend(miu.readU16(rA), 16); break;
+					case 0x09: rD = sign_extend(miu->readU16(rA), 16); break;
 					// pop! rDgh, [rAg0]
-					case 0x0A: rDh = miu.readU32(rAh); rAh += 4; break;
+					case 0x0A: rDh = miu->readU32(rAh); rAh += 4; break;
 					// lbu! rDg0, [rAg0]
-					case 0x0B: rD = miu.readU8(rA); break;
+					case 0x0B: rD = miu->readU8(rA); break;
 					// sw! rDg0, [rAg0]
-					case 0x0C: miu.writeU32(rA, rD); break;
+					case 0x0C: miu->writeU32(rA, rD); break;
 					// sh! rDg0, [rAg0]
-					case 0x0D: miu.writeU16(rA, rD); break;
+					case 0x0D: miu->writeU16(rA, rD); break;
 					// push! rDgh, [rAg0]
-					case 0x0E: miu.writeU32(rAh -= 4, rDh); break;
+					case 0x0E: miu->writeU32(rAh -= 4, rDh); break;
 					// sb! rDg0, [rAg0]
-					case 0x0F: miu.writeU8(rA, rD); break;
+					case 0x0F: miu->writeU8(rA, rD); break;
 				}
 			} break;
 		case 0x03:
@@ -515,19 +515,19 @@ uint32_t CPU::exec16(const Instruction16 &insn) {
 				uint32_t &rD = g0[insn.iform1.rD];
 				switch(insn.iform1.func3) {
 					// lwp! rDg0, imm
-					case 0x00: rD = miu.readU32(r2 + (insn.iform1.Imm5 << 2)); break;
+					case 0x00: rD = miu->readU32(r2 + (insn.iform1.Imm5 << 2)); break;
 					// lhp! rDg0, imm
-					case 0x01: rD = miu.readU16(r2 + (insn.iform1.Imm5 << 1)); break;
+					case 0x01: rD = miu->readU16(r2 + (insn.iform1.Imm5 << 1)); break;
 
 					// lbup! rDg0, imm
-					case 0x03: rD = sign_extend(miu.readU8(r2 + (insn.iform1.Imm5 << 1)), 16); break;
+					case 0x03: rD = sign_extend(miu->readU8(r2 + (insn.iform1.Imm5 << 1)), 16); break;
 					// swp! rDg0, imm
-					case 0x04: miu.writeU32(r2 + (insn.iform1.Imm5 << 2), rD); break;
+					case 0x04: miu->writeU32(r2 + (insn.iform1.Imm5 << 2), rD); break;
 					// shp! rDg0, imm
-					case 0x05: miu.writeU16(r2 + (insn.iform1.Imm5 << 1), rD); break;
+					case 0x05: miu->writeU16(r2 + (insn.iform1.Imm5 << 1), rD); break;
 
 					// sbp! rDg0, imm
-					case 0x07: miu.writeU32(r2 + insn.iform1.Imm5, rD); break;
+					case 0x07: miu->writeU32(r2 + insn.iform1.Imm5, rD); break;
 
 					default: debugDump();
 				}
@@ -659,7 +659,7 @@ void CPU::debugDump() {
 
 	FILE* memdump = fopen("MEMDUMP", "wb");
 	for(int i=0; i<0x01000000; ++i)
-		fputc(miu.readU8(0xA0000000 + i), memdump);
+		fputc(miu->readU8(0xA0000000 + i), memdump);
 	fclose(memdump);
 
 	exit(1);

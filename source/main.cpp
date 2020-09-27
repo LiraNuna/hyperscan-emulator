@@ -36,18 +36,19 @@ auto createFileMemoryRegion(const char* fileName, uint32_t offset = 0) {
 int main() {
 	CPU cpu;
 
+	cpu.miu = std::make_shared<memory::SegmentedMemoryRegion<8, 24>>();
 	auto firmware = createFileMemoryRegion("roms/hsfirmware.bin");
 	auto dram = std::make_shared<memory::ArrayMemoryRegion<24>>();
 	auto mmio = std::make_shared<io::IOMemoryRegion>();
 
-	cpu.miu.setRegion(0x9E, firmware);
-	cpu.miu.setRegion(0x9F, firmware);
+	cpu.miu->setRegion(0x9E, firmware);
+	cpu.miu->setRegion(0x9F, firmware);
 
-	cpu.miu.setRegion(0x80, dram);
-	cpu.miu.setRegion(0xA0, dram);
+	cpu.miu->setRegion(0x80, dram);
+	cpu.miu->setRegion(0xA0, dram);
 
-	cpu.miu.setRegion(0x08, mmio);
-	cpu.miu.setRegion(0x88, mmio);
+	cpu.miu->setRegion(0x08, mmio);
+	cpu.miu->setRegion(0x88, mmio);
 
 	// XXX: Debug control register
 	cpu.cr29 = 0x20000000;
