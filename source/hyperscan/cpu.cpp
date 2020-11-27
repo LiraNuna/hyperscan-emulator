@@ -133,11 +133,11 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// bittgl[.c] rA, imm5
 					case 0x17: rD = bit_op(rA, 1 << insn.spform.rB, insn.spform.CU, std::bit_xor()); break;
 					// sll[.c] rA, imm5
-					case 0x18: rD = sll(rA, insn.spform.rB, insn.spform.CU); break;
+					case 0x18: rD = sll(rA, rB, insn.spform.CU); break;
 					// srl[.c] rA, imm5
-					case 0x1A: rD = srl(rA, insn.spform.rB, insn.spform.CU); break;
+					case 0x1A: rD = srl(rA, rB, insn.spform.CU); break;
 					// sra[.c] rA, imm5
-					case 0x1B: rD = sra(rA, insn.spform.rB, insn.spform.CU); break;
+					case 0x1B: rD = sra(rA, rB, insn.spform.CU); break;
 
 					// mul rA, rB
 					case 0x20: ce_op(rA, rB, std::multiplies<int64_t>()); break;

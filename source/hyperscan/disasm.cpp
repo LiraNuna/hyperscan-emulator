@@ -227,19 +227,19 @@ void disasm32(const CPU::Instruction32 &insn, uint32_t address) {
 							opc("sll", insn.spform.CU),
 							reg(insn.spform.rD),
 							reg(insn.spform.rA),
-							immd(insn.spform.rB));
+							reg(insn.spform.rB));
 				case 0x1A:
 					return ins(
 							opc("srl", insn.spform.CU),
 							reg(insn.spform.rD),
 							reg(insn.spform.rA),
-							immd(insn.spform.rB));
+							reg(insn.spform.rB));
 				case 0x1B:
 					return ins(
 							opc("sra", insn.spform.CU),
 							reg(insn.spform.rD),
 							reg(insn.spform.rA),
-							immd(insn.spform.rB));
+							reg(insn.spform.rB));
 				case 0x20:
 					return ins(
 							opc("mul", insn.spform.CU),
