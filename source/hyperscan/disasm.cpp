@@ -175,7 +175,7 @@ void disasm32(const CPU::Instruction32 &insn, uint32_t address) {
 					return ins(
 							opc("neg", insn.spform.CU),
 							reg(insn.spform.rD),
-							reg(insn.spform.rA));
+							reg(insn.spform.rB));
 				case 0x10:
 					return ins(
 							opc("and", insn.spform.CU),

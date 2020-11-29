@@ -115,7 +115,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					case 0x0D:      cmp(rA, 0, insn.spform.rD & 0x03, insn.spform.CU); break;
 
 					// neg[.c] rD, rA
-					case 0x0F: rD = sub(0, rA, insn.spform.CU); break;
+					case 0x0F: rD = sub(0, rB, insn.spform.CU); break;
 					// and[.c] rD, rA, rB
 					case 0x10: rD = bit_op(rA, rB, insn.spform.CU, std::bit_and()); break;
 					// or[.c] rD, rA, rB
