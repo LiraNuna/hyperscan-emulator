@@ -11,3 +11,5 @@ void debugger_enable();
 void debugger_disable();
 
 void debugger_loop(hyperscan::CPU &cpu);
+
+void debugger_view_memory(uint32_t address);

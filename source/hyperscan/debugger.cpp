@@ -42,9 +42,9 @@ const std::map<const std::string, std::function<void(std::vector<std::string>, C
 			}
 		}},
 		{"b",  [](auto arguments, auto cpu) {
-		    if (arguments.empty()) {
-		        return debugger_breakpoint_toggle(cpu->pc, false);
-		    }
+			if (arguments.empty()) {
+				return debugger_breakpoint_toggle(cpu->pc, false);
+			}
 
 			for (const auto& arg : arguments) {
 				debugger_breakpoint_toggle(parse_address(arg, cpu), false);
@@ -55,7 +55,7 @@ const std::map<const std::string, std::function<void(std::vector<std::string>, C
 			debugger_disable();
 		}},
 		{"m", [](auto arguments, auto cpu) {
-			memory_view_address = parse_address(arguments[0], cpu);
+			debugger_view_memory(parse_address(arguments[0], cpu));
 		}},
 		{"i", [](auto arguments, auto cpu) {
 			cpu->interrupt(std::stol(arguments[0]));
@@ -241,6 +241,10 @@ void debugger_enable() {
 
 void debugger_disable() {
 	debugger = false;
+}
+
+void debugger_view_memory(uint32_t address) {
+	memory_view_address = address;
 }
 
 void debugger_loop(CPU &cpu) {
