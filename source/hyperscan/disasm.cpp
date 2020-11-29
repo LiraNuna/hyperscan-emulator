@@ -735,9 +735,9 @@ void disasm16(const CPU::Instruction16 &insn, uint32_t address) {
 					immx32(address + (sign_extend(insn.bxform.Imm8, 8) << 1)));
 		case 0x05:
 			return ins(
-					op("ldui!"),
+					op("ldiu!"),
 					reg(insn.iform2.rD),
-					immx16(insn.iform2.Imm8));
+					immd(insn.iform2.Imm8));
 		case 0x06:
 			switch (insn.iform1.func3) {
 				case 0x03:
