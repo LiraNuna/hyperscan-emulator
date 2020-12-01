@@ -211,9 +211,6 @@ class CPU {
 
 		void cmp(uint32_t a, uint32_t b, int tcs=3, bool flags=true);
 
-		template <typename Op >
-		void ce_op(uint32_t a, uint32_t b, Op op);
-
 		uint32_t add(uint32_t a, uint32_t b, bool flags);
 
 		uint32_t addc(uint32_t a, uint32_t b, bool flags);
@@ -304,7 +301,14 @@ class CPU {
 		};
 
 		// Custom Engine Registers
-		uint32_t CEH, CEL;
+		union {
+			uint64_t CE;
+
+			struct {
+				uint32_t CEL;
+				uint32_t CEH;
+			};
+		};
 
 		// Program Counter
 		uint32_t pc;

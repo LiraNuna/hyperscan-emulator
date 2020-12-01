@@ -140,13 +140,13 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					case 0x1B: rD = sra(rA, rB, insn.spform.CU); break;
 
 					// mul rA, rB
-					case 0x20: ce_op(rA, rB, std::multiplies<int64_t>()); break;
+					case 0x20: CE = std::multiplies<int64_t>()(rA, rB); break;
 					// mulu rA, rB
-					case 0x21: ce_op(rA, rB, std::multiplies<uint64_t>()); break;
+					case 0x21: CE = std::multiplies<uint64_t>()(rA, rB); break;
 					// div rA, rB
-					case 0x22: ce_op(rA, rB, std::divides<int64_t>()); break;
+					case 0x22: CEL = std::divides<int64_t>()(rA, rB); CEH = std::modulus<int64_t>()(rA, rB); break;
 					// divu rA, rB
-					case 0x23: ce_op(rA, rB, std::divides<uint64_t>()); break;
+					case 0x23: CEL = std::divides<uint64_t>()(rA, rB); CEH = std::modulus<uint64_t>()(rA, rB); break;
 
 					// mfce{hl} rD[, rA]
 					case 0x24:
@@ -573,14 +573,6 @@ void CPU::cmp(uint32_t a, uint32_t b, int tcs, bool flags) {
 		case 0x00: T = Z; break;
 		case 0x01: T = N; break;
 	}
-}
-
-template <typename Op >
-void CPU::ce_op(uint32_t a, uint32_t b, Op op) {
-	auto result = op(a, b);
-
-	CEL = result & 0xFFFFFFFF;
-	CEH = result >> 32;
 }
 
 uint32_t CPU::add(uint32_t a, uint32_t b, bool flags) {
