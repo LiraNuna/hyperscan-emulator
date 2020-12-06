@@ -212,7 +212,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 			} break;
 		case 0x02:
 				// j[l] imm24
-				return jump<32>(((pc & 0xFC000000) | (insn.jform.Disp24 << 1)), insn.jform.LK);
+				return jump<32>(((pc & 0xFE000000) | (insn.jform.Disp24 << 1)), insn.jform.LK);
 		case 0x03: {
 				uint32_t &rD = r[insn.rixform.rD];
 				uint32_t &rA = r[insn.rixform.rA];
