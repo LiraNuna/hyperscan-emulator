@@ -86,8 +86,8 @@ const std::map<const std::string, std::function<void(std::vector<std::string>, C
 		}},
 };
 
-void move(int x, int y) {
-	printf("\033[%d;%dH", y, x);
+void move(size_t x, size_t y) {
+	printf("\033[%zu;%zuH", y, x);
 }
 
 void draw_border() {
@@ -162,7 +162,7 @@ void draw_memory(int x, int y, int h, const CPU &cpu, uint32_t startAddress) {
 	}
 }
 
-void draw_stack(int x, int y, int h, const CPU &cpu) {
+void draw_stack(size_t x, size_t y, size_t h, const CPU &cpu) {
 	const auto get_value_color = [](uint32_t value) {
 		switch (value) {
 			case 0x88000000 ... 0x88250000: return "\033[32m";
@@ -172,12 +172,12 @@ void draw_stack(int x, int y, int h, const CPU &cpu) {
 		}
 	};
 
-	int stack_size = std::min<int>((0xa1000000 - cpu.r0) / 4, h);
-	for (int i = 0; i < h - stack_size; ++i) {
+	size_t stack_size = std::min<size_t>((0xa1000000 - cpu.r0) / 4, h);
+	for (size_t i = 0; i < h - stack_size; ++i) {
 		move(x, y + i);
 		printf("%10s", "");
 	}
-	for (int i = 0; i < stack_size; ++i) {
+	for (size_t i = 0; i < stack_size; ++i) {
 		move(x, y + i + (h - stack_size));
 
 		uint32_t address = cpu.r0 + (i * 4);
