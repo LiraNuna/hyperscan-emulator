@@ -157,7 +157,7 @@ void draw_memory(int x, int y, int h, const CPU &cpu, uint32_t startAddress) {
 		printf(" ");
 		for (int ii = 0; ii < 16; ++ii) {
 			uint8_t byte = cpu.miu->readU8(startAddress + (i * 16) + ii);
-			printf("%s%c\033[39m", get_byte_color(byte), (byte > 0x20 && byte < 0x7E) ? byte : '.');
+			printf("%s%c\033[39m", get_byte_color(byte), (byte > 0x19 && byte < 0x7E) ? byte : '.');
 		}
 	}
 }
