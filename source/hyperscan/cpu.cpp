@@ -272,7 +272,7 @@ uint32_t CPU::exec32(const Instruction32 &insn) {
 					// mfcr rD, crA
 					case 0x01: rD = crA; break;
 					// rte
-					case 0x84: return jump<32>(cr5, false); /* TODO: missing PSR */ break;
+					case 0x84: return jump<32>(cr5, false); /* TODO: missing PSR */
 
 					default: debugDump();
 				}
