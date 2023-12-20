@@ -189,6 +189,11 @@ class CPU {
 		uint32_t step();
 
 		/**
+		 * Causes an exception to fire
+		 */
+		void exception(uint8_t cause);
+
+		/**
 		 * Causes an interrupt to fire
 		 */
 		void interrupt(uint8_t cause);

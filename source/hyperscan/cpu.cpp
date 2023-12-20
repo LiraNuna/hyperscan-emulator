@@ -53,11 +53,7 @@ uint32_t CPU::step() {
 	return pc += exec16<16>(insn16);
 }
 
-void CPU::interrupt(uint8_t cause) {
-	// Don't fire if interrupts are disabled
-	if(!(cr0 & 1))
-		return;
-
+void CPU::exception(uint8_t cause) {
 	// Set cause in cr2
 	cr2 &= ~0x00FC0000;
 	cr2 |= (cause & 0x3F) << 18;
@@ -65,8 +61,16 @@ void CPU::interrupt(uint8_t cause) {
 	// Save old PC
 	cr5 = pc;
 
-	// Jump to interrupt
-	pc = cr3 + 0x1FC + (cause * 4);
+	// Jump
+	pc = cr3 + (cause * 4);
+}
+
+void CPU::interrupt(uint8_t cause) {
+	// Don't fire if interrupts are disabled
+	if(!(cr0 & 1))
+		return;
+
+	exception(cause + 128);
 }
 
 template <int I>
