@@ -70,7 +70,7 @@ void CPU::interrupt(uint8_t cause) {
 	if(!(cr0 & 1))
 		return;
 
-	exception(cause + 128);
+	exception((63 - cause) + 128);
 }
 
 template <int I>
