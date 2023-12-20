@@ -171,11 +171,6 @@ class CPU {
 		void reset();
 
 		/**
-		 * Reset all CPU flags
-		 */
-		void reset_flags();
-
-		/**
 		 * Reset all CPU registers
 		 */
 		void reset_registers();
