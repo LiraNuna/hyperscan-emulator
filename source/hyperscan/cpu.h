@@ -166,14 +166,9 @@ class CPU {
 		CPU();
 
 		/**
-		 * Reset the CPU
+		 * Resets the CPU
 		 */
 		void reset();
-
-		/**
-		 * Reset all CPU registers
-		 */
-		void reset_registers();
 
 		/**
 		 * Runs a single instruction from PC

@@ -17,10 +17,6 @@ CPU::CPU() {
 }
 
 void CPU::reset() {
-	reset_registers();
-}
-
-void CPU::reset_registers() {
 	std::fill(r, r + 32, 0);
 	std::fill(cr, cr + 32, 0);
 	std::fill(sr, sr + 32, 0);
