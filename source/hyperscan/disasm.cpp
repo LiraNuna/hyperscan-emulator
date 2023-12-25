@@ -91,7 +91,7 @@ std::string immx16(int i) {
 	return imm(ha.str());
 }
 
-std::string immx32(int i) {
+std::string immx32(uint32_t i) {
 	std::stringstream ha;
 	ha << "0x" << std::setfill('0') << std::setw(8) << std::hex << i;
 	return imm(ha.str());
@@ -472,7 +472,7 @@ void disasm32(const CPU::Instruction32 &insn, uint32_t address) {
 			}
 		}
 		case 0x07: {
-			int16_t imm12 = sign_extend(insn.rixform.Imm12, 12);
+			int32_t imm12 = sign_extend(insn.rixform.Imm12, 12);
 			switch (insn.rixform.func3) {
 				case 0x00:
 					return ins(

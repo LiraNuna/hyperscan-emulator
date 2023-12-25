@@ -60,7 +60,7 @@ int main() {
 //	cpu.pc = 0xA0091000;
 
 	debugger_enable();
-	while (1) {
+	while (true) {
 		debugger_loop(cpu);
 		cpu.step();
 	}
