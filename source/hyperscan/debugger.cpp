@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 #include <map>
+#include <fstream>
 
 #include "hyperscan/debugger.h"
 #include "hyperscan/disasm.h"
@@ -15,6 +16,7 @@ using namespace hyperscan;
 bool debugger = false;
 uint32_t memory_view_address = 0xa0000000;
 std::unordered_map<uint32_t, bool> breakpoints = {};
+std::unordered_map<uint32_t, std::string> aliases = {};
 
 uint32_t parse_address(const std::string &str, CPU* cpu) {
 	if (str.starts_with("r")) {
@@ -245,6 +247,44 @@ void debugger_disable() {
 
 void debugger_view_memory(uint32_t address) {
 	memory_view_address = address;
+}
+
+void debugger_load_mapping(const char *filename) {
+	std::ifstream mappingFile(filename);
+	if (!mappingFile.is_open()) {
+		return;
+	}
+
+	std::string line;
+	while (std::getline(mappingFile, line)) {
+		size_t spaceIdx = line.find(' ');
+		if (spaceIdx == std::string::npos) {
+			continue;
+		}
+
+		std::string addressString = line.substr(0, spaceIdx);
+		std::string name = line.substr(spaceIdx + 1);
+		if (addressString.empty() || name.empty()) {
+			continue;
+		}
+
+		uint32_t address = std::stol(addressString, nullptr, 16);
+		if (address < 0xA0000000 || address > 0xB0000000) {
+			continue;
+		}
+
+		aliases.insert(std::make_pair(address, name));
+	}
+
+	mappingFile.close();
+}
+
+std::string debugger_get_alias(uint32_t address) {
+	if (!aliases.contains(address)) {
+		return "";
+	}
+
+	return aliases[address];
 }
 
 void debugger_loop(CPU &cpu) {

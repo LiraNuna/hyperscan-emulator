@@ -1,4 +1,5 @@
 #include "disasm.h"
+#include "debugger.h"
 
 #include <iomanip>
 #include <sstream>
@@ -92,6 +93,11 @@ std::string immx16(int i) {
 }
 
 std::string immx32(uint32_t i) {
+	std::string alias = debugger_get_alias(i);
+	if (!alias.empty()) {
+		return "\033[94m" + alias + "\033[39m";
+	}
+
 	std::stringstream ha;
 	ha << "0x" << std::setfill('0') << std::setw(8) << std::hex << i;
 	return imm(ha.str());
