@@ -18,13 +18,13 @@ mkdir -p "$WORKING_DIR"
 cd "$WORKING_DIR"
 
 echo "Downloading binutils $BINUTILS_VERSION..."
-curl -C - --progress-bar "https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.bz2" -o "binutils-$BINUTILS_VERSION.tar.bz2"
+[ -f "binutils-$BINUTILS_VERSION.tar.bz2" ] || curl -C - --progress-bar "https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.bz2" -o "binutils-$BINUTILS_VERSION.tar.bz2"
 
 echo "Downloading gcc $GCC_VERSION..."
-curl -C - --progress-bar "https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.bz2" -o "gcc-$GCC_VERSION.tar.bz2"
+[ -f "gcc-$GCC_VERSION.tar.bz2" ] || curl -C - --progress-bar "https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.bz2" -o "gcc-$GCC_VERSION.tar.bz2"
 
 # echo "Downloading newlib $NEWLIB_VERSION..."
-# curl --progress-bar "ftp://sourceware.org/pub/newlib/newlib-$NEWLIB_VERSION.tar.gz" -o "newlib-$NEWLIB_VERSION.tar.gz"
+[ -f "newlib-$NEWLIB_VERSION.tar.gz" ] || # curl --progress-bar "ftp://sourceware.org/pub/newlib/newlib-$NEWLIB_VERSION.tar.gz" -o "newlib-$NEWLIB_VERSION.tar.gz"
 
 echo "Unpacking binutils $BINUTILS_VERSION..."
 tar xf "binutils-$BINUTILS_VERSION.tar.bz2"
