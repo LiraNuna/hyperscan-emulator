@@ -1,0 +1,44 @@
+diff --git a/bfd/elf32-score.c b/bfd/elf32-score.c
+index d1a910f279..eb93c7cfa1 100644
+--- bfd/elf32-score.c
++++ bfd/elf32-score.c
+@@ -2165,7 +2165,7 @@ score_elf_final_link_relocate (reloc_howto_type *howto,
+       if ((offset & 0x1000000) != 0)
+ 	offset |= 0xfe000000;
+       value += offset;
+-      abs_value = value - rel_addr;
++      abs_value = (value < rel_addr) ? rel_addr - value : value - rel_addr;
+       if ((abs_value & 0xfe000000) != 0)
+ 	return bfd_reloc_overflow;
+       addend = (addend & ~howto->src_mask)
+@@ -2241,7 +2241,7 @@ score_elf_final_link_relocate (reloc_howto_type *howto,
+       if ((offset & 0x800) != 0)	/* Offset is negative.  */
+ 	offset |= 0xfffff000;
+       value += offset;
+-      abs_value = value - rel_addr;
++      abs_value = (value < rel_addr) ? rel_addr - value : value - rel_addr;
+       if ((abs_value & 0xfffff000) != 0)
+ 	return bfd_reloc_overflow;
+       addend = (addend & ~howto->src_mask) | (value & howto->src_mask);
+diff --git a/bfd/elf32-score7.c b/bfd/elf32-score7.c
+index ab5e32a29a..3bf4c30465 100644
+--- bfd/elf32-score7.c
++++ bfd/elf32-score7.c
+@@ -2066,7 +2066,7 @@ score_elf_final_link_relocate (reloc_howto_type *howto,
+       if ((offset & 0x1000000) != 0)
+ 	offset |= 0xfe000000;
+       value += offset;
+-      abs_value = value - rel_addr;
++      abs_value = (value < rel_addr) ? rel_addr - value : value - rel_addr;
+       if ((abs_value & 0xfe000000) != 0)
+ 	return bfd_reloc_overflow;
+       addend = (addend & ~howto->src_mask)
+@@ -2096,7 +2096,7 @@ score_elf_final_link_relocate (reloc_howto_type *howto,
+       if ((offset & 0x800) != 0)	/* Offset is negative.  */
+ 	offset |= 0xfffff000;
+       value += offset;
+-      abs_value = value - rel_addr;
++      abs_value = (value < rel_addr) ? rel_addr - value : value - rel_addr;
+       if ((abs_value & 0xfffff000) != 0)
+ 	return bfd_reloc_overflow;
+       addend = (addend & ~howto->src_mask) | (value & howto->src_mask);
