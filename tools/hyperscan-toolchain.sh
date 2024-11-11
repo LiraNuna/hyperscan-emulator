@@ -36,8 +36,8 @@ tar xf "gcc-$GCC_VERSION.tar.xz"
 # rm -rf "newlib-$NEWLIB_VERSION.tar.gz"
 
 # patch binutils for R_SCORE_24 problem
-cd "$WORKING_DIR/binutils-$BINUTILS_VERSION" && patch -p0 << binutils-patch.diff
-cd "$WORKING_DIR/gcc" && patch -p0 << gcc-patch.diff
+cd "$WORKING_DIR/binutils-$BINUTILS_VERSION" && patch -p0 < binutils-patch.diff
+cd "$WORKING_DIR/gcc" && patch -p0 < gcc-patch.diff
 
 # compile binutils
 mkdir -p "$WORKING_DIR/build-binutils" && cd "$WORKING_DIR/build-binutils"
