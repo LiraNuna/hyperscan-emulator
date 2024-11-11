@@ -9,7 +9,7 @@ export TARGET=score-elf
 export PREFIX=$(pwd)/$NAME
 export PATH=$PREFIX/bin:$PATH
 
-export BINUTILS_VERSION=14.2.0
+export BINUTILS_VERSION=2.35.2
 export GCC_VERSION=4.9.4
 # export NEWLIB_VERSION=1.20.0
 
@@ -17,7 +17,7 @@ mkdir -p "$WORKING_DIR"
 cd "$WORKING_DIR"
 
 echo "Downloading binutils $BINUTILS_VERSION..."
-curl -C - --progress-bar "https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.xz" -o "binutils-$BINUTILS_VERSION.tar.xz"
+curl -C - --progress-bar "https://ftp.gnu.org/gnu/binutils/binutils-$BINUTILS_VERSION.tar.bz2" -o "binutils-$BINUTILS_VERSION.tar.bz2"
 
 echo "Downloading gcc $GCC_VERSION..."
 curl -C - --progress-bar "https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_VERSION.tar.xz" -o "gcc-$GCC_VERSION.tar.xz"
@@ -26,7 +26,7 @@ curl -C - --progress-bar "https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_
 # curl --progress-bar "ftp://sourceware.org/pub/newlib/newlib-$NEWLIB_VERSION.tar.gz" -o "newlib-$NEWLIB_VERSION.tar.gz"
 
 echo "Unpacking binutils $BINUTILS_VERSION..."
-tar xf "binutils-$BINUTILS_VERSION.tar.xz"
+tar xf "binutils-$BINUTILS_VERSION.tar.bz2"
 
 echo "Unpacking gcc $GCC_VERSION..."
 tar xf "gcc-$GCC_VERSION.tar.xz"
