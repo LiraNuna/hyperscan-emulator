@@ -37,7 +37,7 @@ tar xf "gcc-$GCC_VERSION.tar.xz"
 
 # patch binutils for R_SCORE_24 problem
 cd "$WORKING_DIR/binutils-$BINUTILS_VERSION" && patch -p0 < $ROOT_DIR/binutils-patch.diff
-cd "$WORKING_DIR/gcc" && patch -p0 < $ROOT_DIR/gcc-patch.diff
+cd "$WORKING_DIR/gcc-$GCC_VERSION" && patch -p0 < $ROOT_DIR/gcc-patch.diff
 
 # compile binutils
 mkdir -p "$WORKING_DIR/build-binutils" && cd "$WORKING_DIR/build-binutils"
