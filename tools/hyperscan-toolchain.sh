@@ -1,14 +1,14 @@
 set -e
 mkdir -p working-dir
 
+export ROOT_DIR=$(pwd)
 export NAME=hyperscan-toolchain
 export THREADS=$(nproc --all)
-export WORKING_DIR=$(pwd)/working-dir
+export WORKING_DIR=$ROOT_DIR/working-dir
 
 export TARGET=score-elf
-export PREFIX=$(pwd)/$NAME
+export PREFIX=$ROOT_DIR/$NAME
 export PATH=$PREFIX/bin:$PATH
-
 export BINUTILS_VERSION=2.35.2
 export GCC_VERSION=14.2.0
 # export NEWLIB_VERSION=1.20.0
@@ -36,8 +36,8 @@ tar xf "gcc-$GCC_VERSION.tar.xz"
 # rm -rf "newlib-$NEWLIB_VERSION.tar.gz"
 
 # patch binutils for R_SCORE_24 problem
-cd "$WORKING_DIR/binutils-$BINUTILS_VERSION" && patch -p0 < binutils-patch.diff
-cd "$WORKING_DIR/gcc" && patch -p0 < gcc-patch.diff
+cd "$WORKING_DIR/binutils-$BINUTILS_VERSION" && patch -p0 < $ROOT_DIR/binutils-patch.diff
+cd "$WORKING_DIR/gcc" && patch -p0 < $ROOT_DIR/gcc-patch.diff
 
 # compile binutils
 mkdir -p "$WORKING_DIR/build-binutils" && cd "$WORKING_DIR/build-binutils"
