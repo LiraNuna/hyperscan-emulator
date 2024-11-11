@@ -10,7 +10,7 @@ export PREFIX=$(pwd)/$NAME
 export PATH=$PREFIX/bin:$PATH
 
 export BINUTILS_VERSION=2.35.2
-export GCC_VERSION=14.2.0/
+export GCC_VERSION=14.2.0
 # export NEWLIB_VERSION=1.20.0
 
 mkdir -p "$WORKING_DIR"
