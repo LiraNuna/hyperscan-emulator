@@ -26,10 +26,10 @@ curl -C - --progress-bar "https://ftp.gnu.org/gnu/gcc/gcc-$GCC_VERSION/gcc-$GCC_
 # curl --progress-bar "ftp://sourceware.org/pub/newlib/newlib-$NEWLIB_VERSION.tar.gz" -o "newlib-$NEWLIB_VERSION.tar.gz"
 
 echo "Unpacking binutils $BINUTILS_VERSION..."
-tar xf "binutils-$BINUTILS_VERSION.tar.bz2"
+tar xf "binutils-$BINUTILS_VERSION.tar.xz"
 
 echo "Unpacking gcc $GCC_VERSION..."
-tar xf "gcc-$GCC_VERSION.tar.bz2"
+tar xf "gcc-$GCC_VERSION.tar.xz"
 
 # echo "Unpacking newlib $NEWLIB_VERSION..."
 # tar xf "newlib-$NEWLIB_VERSION.tar.gz"
