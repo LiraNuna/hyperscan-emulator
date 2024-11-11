@@ -91,7 +91,6 @@ $WORKING_DIR/binutils-$BINUTILS_VERSION/configure --target=$TARGET --prefix=$PRE
 make -j$THREADS all
 make install
 cd $WORKING_DIR
-rm -rf "$WORKING_DIR/binutils-$BINUTILS_VERSION/" "$WORKING_DIR/build-binutils"
 
 # compile first stage gcc
 (cd "$WORKING_DIR/gcc-$GCC_VERSION"; ./contrib/download_prerequisites)
@@ -103,15 +102,9 @@ $WORKING_DIR/gcc-$GCC_VERSION/configure CXXFLAGS="--std=c++03" --target=$TARGET 
 make -j$THREADS all-gcc all-target-libgcc
 make install-gcc install-target-libgcc
 cd $WORKING_DIR
-# rm -rf "$WORKING_DIR/gcc-$GCC_VERSION" "$WORKING_DIR/build-gcc"
 
 # compile newlib
 # mkdir -p "$WORKING_DIR/build-newlib" && cd "$WORKING_DIR/build-newlib"
 # $WORKING_DIR/newlib-$NEWLIB_VERSION/configure --target=$TARGET --prefix=$PREFIX --with-gnu-as --with-gnu-ld --disable-nls
 # make all -j$THREADS
 # make install
-
-# cleanup
-rm -rf "$WORKING_DIR/binutils-$BINUTILS_VERSION.tar.bz2"
-rm -rf "$WORKING_DIR/gcc-$GCC_VERSION.tar.bz2"
-
