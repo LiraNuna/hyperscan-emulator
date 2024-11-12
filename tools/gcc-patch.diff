@@ -1,4 +1,4 @@
-diff --git config.sub config.sub
+diff --git a/config.sub b/config.sub
 index 38f3d037a..800d4e50c 100755
 --- config.sub
 +++ config.sub
@@ -10,7 +10,7 @@ index 38f3d037a..800d4e50c 100755
  			| spu \
  			| tahoe \
  			| thumbv7* \
-diff --git gcc/config.gcc gcc/config.gcc
+diff --git a/gcc/config.gcc b/gcc/config.gcc
 index 9b616bd6e..db5aa6913 100644
 --- gcc/config.gcc
 +++ gcc/config.gcc
@@ -50,25 +50,7 @@ index 9b616bd6e..db5aa6913 100644
  sh-*-elf* | sh[12346l]*-*-elf* | \
    sh-*-linux* | sh[2346lbe]*-*-linux* | \
    sh-*-netbsdelf* | shl*-*-netbsdelf*)
-diff --git gcc/config/rx/rx.cc gcc/config/rx/rx.cc
-index 00242e8a1..5985b75ab 100644
---- gcc/config/rx/rx.cc
-+++ gcc/config/rx/rx.cc
-@@ -3637,8 +3637,11 @@ rx_hard_regno_mode_ok (unsigned int regno, machine_mode)
-   return REGNO_REG_CLASS (regno) == GR_REGS;
- }
- 
--/* Implement TARGET_MODES_TIEABLE_P.  */
--
-+/* Implement TARGET_MODES_TIEABLE_P.
-+   Value is 1 if it is a good idea to tie two pseudo registers
-+   when one has mode MODE1 and one has mode MODE2.
-+   If HARD_REGNO_MODE_OK could produce different values for MODE1 and MODE2,
-+   for any hard reg, then this must be 0 for correct output.  */
- static bool
- rx_modes_tieable_p (machine_mode mode1, machine_mode mode2)
- {
-diff --git gcc/config/score/constraints.md gcc/config/score/constraints.md
+diff --git a/gcc/config/score/constraints.md b/gcc/config/score/constraints.md
 new file mode 100644
 index 000000000..50b0ebfda
 --- /dev/null
@@ -167,7 +149,7 @@ index 000000000..50b0ebfda
 +  "Any SYMBOL_REF."
 +  (and (match_code "symbol_ref")
 +       (match_test "GET_CODE (op) == SYMBOL_REF")))
-diff --git gcc/config/score/elf.h gcc/config/score/elf.h
+diff --git a/gcc/config/score/elf.h b/gcc/config/score/elf.h
 new file mode 100644
 index 000000000..a3fb8a930
 --- /dev/null
@@ -270,7 +252,7 @@ index 000000000..a3fb8a930
 +
 +#undef  ENDFILE_SPEC
 +#define ENDFILE_SPEC            "crtend%O%s crtn%O%s"
-diff --git gcc/config/score/predicates.md gcc/config/score/predicates.md
+diff --git a/gcc/config/score/predicates.md b/gcc/config/score/predicates.md
 new file mode 100644
 index 000000000..543be7260
 --- /dev/null
@@ -428,7 +410,7 @@ index 000000000..543be7260
 +  return 1;
 +})
 +
-diff --git gcc/config/score/score-conv.h gcc/config/score/score-conv.h
+diff --git a/gcc/config/score/score-conv.h b/gcc/config/score/score-conv.h
 new file mode 100644
 index 000000000..c362d9f2d
 --- /dev/null
@@ -512,7 +494,7 @@ index 000000000..c362d9f2d
 +};
 +
 +#endif
-diff --git gcc/config/score/score-generic.md gcc/config/score/score-generic.md
+diff --git a/gcc/config/score/score-generic.md b/gcc/config/score/score-generic.md
 new file mode 100644
 index 000000000..4f155f9f4
 --- /dev/null
@@ -562,7 +544,7 @@ index 000000000..4f155f9f4
 +(define_insn_reservation "up_c" 1
 +                         (eq_attr "up_c" "yes")
 +                         "core")
-diff --git gcc/config/score/score-modes.def gcc/config/score/score-modes.def
+diff --git a/gcc/config/score/score-modes.def b/gcc/config/score/score-modes.def
 new file mode 100644
 index 000000000..dc1b38661
 --- /dev/null
@@ -592,7 +574,7 @@ index 000000000..dc1b38661
 +
 +CC_MODE (CC_N);
 +CC_MODE (CC_NZ);
-diff --git gcc/config/score/score-protos.h gcc/config/score/score-protos.h
+diff --git a/gcc/config/score/score-protos.h b/gcc/config/score/score-protos.h
 new file mode 100644
 index 000000000..2141fb71a
 --- /dev/null
@@ -677,12 +659,12 @@ index 000000000..2141fb71a
 +#endif
 +
 +#endif /* GCC_SCORE_PROTOS_H  */
-diff --git gcc/config/score/score.cc gcc/config/score/score.cc
+diff --git a/gcc/config/score/score.cc b/gcc/config/score/score.cc
 new file mode 100644
-index 000000000..bcbb68f2f
+index 000000000..9ad160849
 --- /dev/null
 +++ gcc/config/score/score.cc
-@@ -0,0 +1,2055 @@
+@@ -0,0 +1,2059 @@
 +/* Output routines for Sunplus S+CORE processor
 +   Copyright (C) 2005-2014 Free Software Foundation, Inc.
 +   Contributed by Sunnorth.
@@ -2675,7 +2657,11 @@ index 000000000..bcbb68f2f
 +static machine_mode
 +score_c_mode_for_floating_type (enum tree_index ti)
 +{
-+  return default_mode_for_floating_type (ti);
++	/* GCC 15 notes: use default_mode_for_floating_type */
++  if (ti == TI_FLOAT_TYPE)
++    return SFmode;
++  gcc_assert (ti == TI_DOUBLE_TYPE || ti == TI_LONG_DOUBLE_TYPE);
++  return DFmode;
 +}
 +
 +/* Implement TARGET_MODES_TIEABLE_P.  */
@@ -2738,7 +2724,7 @@ index 000000000..bcbb68f2f
 +struct gcc_target targetm = TARGET_INITIALIZER;
 +
 +#include "gt-score.h"
-diff --git gcc/config/score/score.h gcc/config/score/score.h
+diff --git a/gcc/config/score/score.h b/gcc/config/score/score.h
 new file mode 100644
 index 000000000..fa924a74b
 --- /dev/null
@@ -3552,7 +3538,7 @@ index 000000000..fa924a74b
 +/* Give call MEMs SImode since it is the "most permissive" mode
 +   for 32-bit targets.  */
 +#define FUNCTION_MODE                   Pmode
-diff --git gcc/config/score/score.md gcc/config/score/score.md
+diff --git a/gcc/config/score/score.md b/gcc/config/score/score.md
 new file mode 100644
 index 000000000..f13d76902
 --- /dev/null
@@ -5437,7 +5423,7 @@ index 000000000..f13d76902
 +  "msbu\t%2, %3"
 +  [(set_attr "mode" "DI")])
 +
-diff --git gcc/config/score/score.opt gcc/config/score/score.opt
+diff --git a/gcc/config/score/score.opt b/gcc/config/score/score.opt
 new file mode 100644
 index 000000000..aa103ad18
 --- /dev/null
@@ -5500,7 +5486,7 @@ index 000000000..aa103ad18
 +
 +EnumValue
 +Enum(score_arch) String(score7d) Value(MASK_SCORE7 | MASK_SCORE7D)
-diff --git gcc/config/score/score.opt.urls gcc/config/score/score.opt.urls
+diff --git a/gcc/config/score/score.opt.urls b/gcc/config/score/score.opt.urls
 new file mode 100644
 index 000000000..7ada2500b
 --- /dev/null
@@ -5508,7 +5494,7 @@ index 000000000..7ada2500b
 @@ -0,0 +1,2 @@
 +meb
 +UrlSuffix(gcc/score-options.html#index-meb)
-diff --git libgcc/config.host libgcc/config.host
+diff --git a/libgcc/config.host b/libgcc/config.host
 index 06fae1545..05e141c34 100644
 --- libgcc/config.host
 +++ libgcc/config.host
