@@ -1,0 +1,41 @@
+--- newlib/configure.host
++++ newlib/configure.host
+@@ -350,6 +350,8 @@
+   sh*)
+     machine_dir=sh
+     ;;
++  score*)
++    ;;
+   sparc*)
+     machine_dir=sparc
+     ;;
+--- newlib/libc/include/machine/ieeefp.h
++++ newlib/libc/include/machine/ieeefp.h
+@@ -400,6 +400,14 @@
+ #define __IEEE_BIG_ENDIAN
+ #endif
+ 
++#ifdef __score__
++#if defined(__scorele__)
++#define __IEEE_LITTLE_ENDIAN
++#else
++#define __IEEE_BIG_ENDIAN
++#endif
++#endif
++
+ #ifndef __IEEE_BIG_ENDIAN
+ #ifndef __IEEE_LITTLE_ENDIAN
+ #error Endianess not declared!!
+--- newlib/libc/include/machine/setjmp.h
++++ newlib/libc/include/machine/setjmp.h
+@@ -250,6 +250,10 @@
+ #define _JBLEN 24
+ #endif
+ 
++#ifdef __score__
++#define _JBLEN 32
++#endif
++
+ #ifdef __moxie__
+ #define _JBLEN 16
+ #endif
