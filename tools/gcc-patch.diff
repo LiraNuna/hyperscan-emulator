@@ -2769,14 +2769,14 @@ index 000000000..fa924a74b
 +#include "score-conv.h"
 +
 +#undef CC1_SPEC
-+#define CC1_SPEC                 "%{!mel:-meb} %{mel:-mel } \
++#define CC1_SPEC                 "%{!mel:%{!meb:-mel}} %{mel:-mel} %{meb:-meb} \
 +%{!mscore*:-mscore7}    \
 +%{mscore7:-mscore7}     \
 +%{mscore7d:-mscore7d}   \
 +%{G*}"
 +
 +#undef ASM_SPEC
-+#define ASM_SPEC                 "%{!mel:-EB} %{mel:-EL} \
++#define ASM_SPEC                 "%{!mel:%{!meb:-EL}} %{mel:-EL} %{meb:-EB} \
 +%{!mscore*:-march=score7}         \
 +%{mscore7:-march=score7}          \
 +%{mscore7d:-march=score7}         \
@@ -2785,7 +2785,7 @@ index 000000000..fa924a74b
 +%{G*}"
 +
 +#undef LINK_SPEC
-+#define LINK_SPEC                "%{!mel:-EB} %{mel:-EL} \
++#define LINK_SPEC                "%{!mel:%{!meb:-EL}} %{mel:-EL} %{meb:-EB} \
 +%{!mscore*:-mscore7_elf}          \
 +%{mscore7:-mscore7_elf}           \
 +%{mscore7d:-mscore7_elf}          \
@@ -2809,7 +2809,7 @@ index 000000000..fa924a74b
 +      builtin_define ("__score7d__");           \
 +  } while (0)
 +
-+#define TARGET_DEFAULT         0
++#define TARGET_DEFAULT         MASK_LITTLE_ENDIAN
 +
 +#define SCORE_GCC_VERSION      "1.6"
 +

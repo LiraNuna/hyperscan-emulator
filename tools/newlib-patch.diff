@@ -16,10 +16,10 @@
  #endif
  
 +#ifdef __score__
-+#if defined(__scorele__)
-+#define __IEEE_LITTLE_ENDIAN
-+#else
++#if defined(__scorebe__)
 +#define __IEEE_BIG_ENDIAN
++#else
++#define __IEEE_LITTLE_ENDIAN
 +#endif
 +#endif
 +
