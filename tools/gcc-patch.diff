@@ -1395,9 +1395,9 @@ index 000000000..9ad160849
 +      const char *section = DECL_SECTION_NAME (decl);
 +      if (strcmp (section, ".sdata") != 0
 +          && strcmp (section, ".sbss") != 0)
-+        return true;
-+      if (!DECL_EXTERNAL (decl))
 +        return false;
++      if (!DECL_EXTERNAL (decl))
++        return true;
 +    }
 +  size = int_size_in_bytes (TREE_TYPE (decl));
 +  return (size > 0 && size <= SCORE_SDATA_MAX);
